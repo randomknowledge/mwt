@@ -1,0 +1,27 @@
+# File types #
+##############
+*.pyc
+*.swo
+*.swp
+*.swn
+*.log
+*.pot
+
+# Directories #
+###############
+.idea/
+virtualenv/
+mwtserver/
+
+# Files #
+#########
+database.db
+mwt/fixtures/initial_data.json
+
+# OS generated files #
+######################
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+*~
