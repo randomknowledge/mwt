@@ -1,5 +1,7 @@
 from celery.task import Task
-from mwt import logger
+from ...utils.exceptions import get_stacktrace_string
+from ...utils.log import logger
+
 
 class BaseTaskPlugin(Task):
     testrun = None
@@ -11,9 +13,9 @@ class BaseTaskPlugin(Task):
         try:
             self.startrun()
             self.process()
-        except Exception, e:
-            logger.fatal("Test failed: %s" % e)
-            self.testrun.fail(e)
+        except Exception:
+            logger.log('fatal', "Test failed: %s" % get_stacktrace_string())
+            self.testrun.fail(get_stacktrace_string())
         else:
             self.endrun()
 

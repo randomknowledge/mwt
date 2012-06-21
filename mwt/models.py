@@ -1,6 +1,8 @@
 import datetime
 from django.db import models
-from mwt.utils import get_tz
+from . import helper
+import re
+from .utils.time import get_tz
 
 
 RUN_STATUS_CHOICES = (
@@ -68,7 +70,7 @@ class Testrun(models.Model):
 
     def duration(self):
         if self.state == 'pending' or self.state == 'running':
-            return datetime.timedelta()
+            return datetime.datetime.now(tz=get_tz()) - self.date_started
         return self.date_finished - self.date_started
 
     def __unicode__(self):
@@ -77,6 +79,26 @@ class Testrun(models.Model):
 
 class Plugin(models.Model):
     dsn = models.CharField(max_length=255, null=False, blank=False, unique=True)
+    name = models.CharField(max_length=120,blank=True,default='')
+    author = models.CharField(max_length=120,blank=True,default='')
+    description = models.TextField(blank=True)
+    versionfield = models.CharField(max_length=12,null=True,default=None)
 
     def __unicode__(self):
-        return self.dsn
+        return "%s (%s) Version %s" % (getattr(self,'name', self.dsn), getattr(self,'name', self.dsn), self.versionstring)
+
+    def save(self, *args, **kwargs):
+        self.versionfield = re.sub(r'[^\d,]', '', str(self.versionfield))
+        super(Plugin, self).save(*args, **kwargs)
+
+    @property
+    def version(self):
+        return helper.version(str(self.versionfield))
+
+    @property
+    def versionstring(self):
+        return helper.versionstring(str(self.versionfield))
+
+    @property
+    def versionnumber(self):
+        return helper.versionnumber(str(self.versionfield))

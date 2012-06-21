@@ -11,4 +11,4 @@ def run_tests():
         for plugin in test.plugins.all():
             run = Testrun(test=test)
             run.save()
-            registered_plugins.get(str(plugin)).delay(run)
+            registered_plugins.get(str(plugin.dsn)).delay(run)
