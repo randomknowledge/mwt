@@ -8,9 +8,9 @@ __pluginname__ = 'MWT Server Reachabe Plugin'
 __description__ = """MWT Server Reachabe Plugin.
 Simply checks if a remote Server is reachable via HTTP
 """
-
+__params__ = ['url']
 
 class Main(BaseTaskPlugin):
     def process(self):
-        url = urlopen(self.testrun.test.url, None, 30)
+        url = urlopen(self.options.get('url'), None, 30)
         self.successmessage = url.info()

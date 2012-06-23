@@ -57,6 +57,7 @@ def register_plugins():
                 p.author = str(plugin.__author__)
                 p.description = str(plugin.__description__)
                 p.versionfield = str(plugin.__version__)
+                p.params = plugin.__params__ or []
                 p.save()
             else:
                 logger.log('debug', "Plugin '%s' with higher or same Version already exists. "
