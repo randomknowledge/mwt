@@ -12,6 +12,7 @@ RUN_STATUS_CHOICES = (
     ('fail', u'Fail'),
 )
 
+
 class Client(models.Model):
     name = models.CharField(max_length=96, null=False, blank=False, unique=True)
     description = models.TextField(blank=True)
@@ -37,10 +38,14 @@ class Test(models.Model):
     plugins = models.ManyToManyField('Plugin')
 
     def get_options_for_plugin(self, plugin):
-        return self._plugin_opts_to_dict(PluginOption.objects.filter(test=self, plugin=plugin))
+        return self._plugin_opts_to_dict(
+                PluginOption.objects.filter(test=self, plugin=plugin)
+        )
 
     def get_options_for_plugin_dsn(self, plugin_dsn):
-        return self._plugin_opts_to_dict(PluginOption.objects.filter(test=self, plugin__dsn=plugin_dsn))
+        return self._plugin_opts_to_dict(
+                PluginOption.objects.filter(test=self, plugin__dsn=plugin_dsn)
+        )
 
     def _plugin_opts_to_dict(self, opts):
         d = {}
@@ -56,7 +61,8 @@ class Testrun(models.Model):
     date_created = models.DateTimeField(auto_created=True, auto_now_add=True)
     date_started = models.DateTimeField(blank=True, null=True)
     date_finished = models.DateTimeField(blank=True, null=True)
-    state = models.CharField(max_length=32, choices=RUN_STATUS_CHOICES, default='pending')
+    state = models.CharField(
+            max_length=32, choices=RUN_STATUS_CHOICES, default='pending')
     message = models.TextField(null=True, blank=True)
     test = models.ForeignKey(Test)
 
@@ -91,13 +97,17 @@ class Testrun(models.Model):
 
 class Plugin(models.Model):
     dsn = models.CharField(max_length=255, null=False, blank=False, unique=True)
-    name = models.CharField(max_length=120,blank=True,default='')
-    author = models.CharField(max_length=120,blank=True,default='')
+    name = models.CharField(max_length=120, blank=True, default='')
+    author = models.CharField(max_length=120, blank=True, default='')
     description = models.TextField(blank=True)
-    versionfield = models.CharField(max_length=12,null=True,default=None)
+    versionfield = models.CharField(max_length=12, null=True, default=None)
 
     def __unicode__(self):
-        return "%s (%s) Version %s" % (getattr(self,'name', self.dsn), getattr(self,'name', self.dsn), self.versionstring)
+        return "%s (%s) Version %s" % (
+                getattr(self, 'name', self.dsn),
+                getattr(self, 'name', self.dsn),
+                self.versionstring
+        )
 
     def save(self, *args, **kwargs):
         self.versionfield = re.sub(r'[^\d,]', '', str(self.versionfield))

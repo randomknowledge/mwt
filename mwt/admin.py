@@ -6,12 +6,14 @@ class PluginOptionInline(admin.TabularInline):
     model = PluginOption
     extra = 1
 
+
 class WebsiteAdmin(admin.ModelAdmin):
     unique_together = (('name', 'url'),)
 
 
 class TestrunAdmin(admin.ModelAdmin):
-    list_display = ('state', 'date_created', 'date_started', 'date_finished', 'duration', 'test' )
+    list_display = ('state', 'date_created', 'date_started',
+            'date_finished', 'duration', 'test')
 
 
 class TestAdmin(admin.ModelAdmin):

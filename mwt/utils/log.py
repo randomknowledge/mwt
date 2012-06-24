@@ -3,6 +3,7 @@ import logging
 import sys
 import inspect
 
+
 class Logger(object):
     debug = lambda self, *args, **kwargs: self.log('debug', *args, **kwargs)
     info = lambda self, *args, **kwargs: self.log('info', *args, **kwargs)

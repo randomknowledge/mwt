@@ -1,6 +1,7 @@
 from .models import Test, Testrun
 from . import registered_plugins
 
+
 def run_tests():
     try:
         tests = Test.objects.all()
