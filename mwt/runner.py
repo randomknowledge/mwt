@@ -12,4 +12,4 @@ def run_tests():
         for plugin in test.plugins.all():
             run = Testrun(test=test, plugin=plugin)
             run.save()
-            registered_plugins.get(str(plugin.dsn)).delay(run)
+            registered_plugins.get(str(plugin.dsn)).apply_async([run], kwargs={'run': run}, countdown=10)

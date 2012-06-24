@@ -91,6 +91,8 @@ class Testrun(models.Model):
         self.end(False, message)
 
     def duration(self):
+        if self.date_started is None:
+            return datetime.timedelta(seconds=0)
         if self.state == 'pending' or self.state == 'running':
             return datetime.datetime.now(tz=get_tz()) - self.date_started
         return self.date_finished - self.date_started
@@ -149,3 +151,7 @@ class PluginOption(models.Model):
         d = {}
         d[str(self.key)] = str(self.value)
         return d
+
+
+#class RunShedule(models.Model):
+#    run_every = models.IntegerField(verbose_name='Run every x seconds...', blank=True, null=True)

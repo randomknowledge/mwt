@@ -8,6 +8,7 @@ class BaseTaskPlugin(Task):
     successmessage = ''
     options = {}
 
+
     def run(self, run_obj, **kwargs):
         self.testrun = run_obj
         self.options = run_obj.test.get_options_for_plugin_dsn(plugin_dsn=str(self.__module__))
