@@ -34,7 +34,6 @@ class Website(models.Model):
 class Test(models.Model):
     website = models.ForeignKey(Website)
     description = models.CharField(max_length=255, null=False, blank=False)
-    url = models.URLField(null=False, blank=False)
     plugins = models.ManyToManyField('Plugin')
 
     def get_options_for_plugin(self, plugin):
@@ -64,7 +63,8 @@ class Testrun(models.Model):
     state = models.CharField(
             max_length=32, choices=RUN_STATUS_CHOICES, default='pending')
     message = models.TextField(null=True, blank=True)
-    test = models.ForeignKey(Test)
+    test = models.ForeignKey(Test, related_name='+')
+    plugin = models.ForeignKey('Plugin', related_name='+')
 
     def start(self):
         self.date_started = datetime.datetime.now(tz=get_tz())
@@ -92,7 +92,7 @@ class Testrun(models.Model):
         return self.date_finished - self.date_started
 
     def __unicode__(self):
-        return str(self.test)
+        return "%s: %s" % (str(self.test), str(self.plugin))
 
 
 class Plugin(models.Model):
@@ -101,6 +101,7 @@ class Plugin(models.Model):
     author = models.CharField(max_length=120, blank=True, default='')
     description = models.TextField(blank=True)
     versionfield = models.CharField(max_length=12, null=True, default=None)
+    params = models.TextField(null=True, blank=True, editable=False)
 
     def __unicode__(self):
         return "%s (%s) Version %s" % (

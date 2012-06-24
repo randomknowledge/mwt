@@ -4,7 +4,7 @@ from .models import Client, Website, Test, Testrun, Plugin, PluginOption
 
 class PluginOptionInline(admin.TabularInline):
     model = PluginOption
-    extra = 1
+    extra = 0
 
 
 class WebsiteAdmin(admin.ModelAdmin):
@@ -13,15 +13,24 @@ class WebsiteAdmin(admin.ModelAdmin):
 
 class TestrunAdmin(admin.ModelAdmin):
     list_display = ('state', 'date_created', 'date_started',
-            'date_finished', 'duration', 'test')
+            'date_finished', 'duration', 'test', 'plugin')
+
+    def has_add_permission(self, request):
+        return False
 
 
 class TestAdmin(admin.ModelAdmin):
     inlines = (PluginOptionInline, )
+    change_form_template = 'admin/test_change_form.html'
+
+    class Media:
+        js = [ 'mwt/admin/js/test_admin.js', ]
 
 
 class PluginAdmin(admin.ModelAdmin):
-    pass
+    def has_add_permission(self, request):
+        return False
+
 
 admin.site.register(Client)
 admin.site.register(Website, WebsiteAdmin)

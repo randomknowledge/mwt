@@ -10,6 +10,6 @@ def run_tests():
 
     for test in tests:
         for plugin in test.plugins.all():
-            run = Testrun(test=test)
+            run = Testrun(test=test, plugin=plugin)
             run.save()
             registered_plugins.get(str(plugin.dsn)).delay(run)

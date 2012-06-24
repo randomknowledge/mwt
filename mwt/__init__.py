@@ -1,5 +1,5 @@
 from . import tasks
-from mwt.utils.exceptions import get_stacktrace_string
+from .utils.exceptions import get_stacktrace_string
 from .utils.log import logger
 
 registered_plugins = {}
