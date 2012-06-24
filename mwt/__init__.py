@@ -2,6 +2,7 @@ from . import tasks
 from .utils.exceptions import get_stacktrace_string
 from .utils.log import logger
 
+
 registered_plugins = {}
 
 try:

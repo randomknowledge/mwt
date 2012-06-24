@@ -4,7 +4,6 @@ from . import helper
 from .utils.exceptions import get_stacktrace_string
 from .plugins.tasks import BaseTaskPlugin
 from .utils.log import logger
-from celery.registry import tasks
 import os
 import re
 
@@ -47,25 +46,19 @@ def import_plugins():
 def register_plugins():
     registered_plugins = {}
     for plugin in import_plugins():
-        try:
-            logger.log('debug', "Registering Task Plugin '%s'" % plugin.__name__)
-            tasks.register(plugin.Main)
-        except Exception:
-            logger.log('warning', "Failed to register Task Plugin '%s': %s" %
-                    (plugin, get_stacktrace_string()))
-        else:
-            p, created = Plugin.objects.get_or_create(dsn=plugin.__name__)
+        logger.log('debug', "Registering Task Plugin '%s'" % plugin.__name__)
+        p, created = Plugin.objects.get_or_create(dsn=plugin.__name__)
 
-            if created or p.versionnumber < helper.versionnumber(plugin.__version__):
-                p.name = str(plugin.__pluginname__)
-                p.author = str(plugin.__author__)
-                p.description = str(plugin.__description__)
-                p.versionfield = str(plugin.__version__)
-                p.params = ','.join(plugin.__params__ or [])
-                p.save()
-            else:
-                logger.log('debug', "Plugin '%s' with higher or same Version "
-                                    "already exists. Not creating Plugin object "
-                                    "in DB." % p.__unicode__())
-            registered_plugins[plugin.__name__] = plugin.Main
+        if created or p.versionnumber < helper.versionnumber(plugin.__version__):
+            p.name = str(plugin.__pluginname__)
+            p.author = str(plugin.__author__)
+            p.description = str(plugin.__description__)
+            p.versionfield = str(plugin.__version__)
+            p.params = ','.join(plugin.__params__ or [])
+            p.save()
+        else:
+            logger.log('debug', "Plugin '%s' with higher or same Version "
+                                "already exists. Not creating Plugin object "
+                                "in DB." % p.__unicode__())
+        registered_plugins[plugin.__name__] = plugin.Main()
     return registered_plugins

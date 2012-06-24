@@ -1,5 +1,5 @@
 from urllib2 import urlopen
-from mwt.plugins.tasks import BaseTaskPlugin
+from ..tasks import BaseTaskPlugin
 
 
 __version__ = (0, 1, 2)

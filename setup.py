@@ -17,9 +17,7 @@ setup(
                 ' New tests are can be added as plugins.',
     long_description=open('Readme.md').read(),
     zip_safe=False,
-    install_requires=['Django==1.4', 'South==0.7.5', 'redis==2.4.13',
-        'rq', 'pytz', 'selenium==2.24.0', 'html5lib==0.95', 'lxml==2.3.4'],
-    dependency_links=['https://github.com/nvie/rq/tarball/master#egg=rq'],
+    install_requires=['Django==1.4', 'South==0.7.5', 'pytz', 'selenium==2.24.0', 'html5lib==0.95', 'lxml==2.3.4'],
     classifiers=[
         #'Development Status :: 1 - Planning',
         'Development Status :: 2 - Pre-Alpha',

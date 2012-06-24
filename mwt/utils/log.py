@@ -10,12 +10,13 @@ class Logger(object):
     warn = lambda self, *args, **kwargs: self.log('warn', *args, **kwargs)
     warning = lambda self, *args, **kwargs: self.log('warn', *args, **kwargs)
     error = lambda self, *args, **kwargs: self.log('error', *args, **kwargs)
+    fatal = error
 
     def log(self, level, message, *args, **kwargs):
         '''
         Log the specified message with log level "level".
 
-        Level can be one of 'debug', 'info', 'notice', 'warning', 'error'.
+        Level can be one of 'debug', 'info', 'notice', 'warning', 'error'/'fatal'.
         Messages can contain placeholders "%s" with the actual content in *args.
         Sentry will group messages with the same message and only different args.
 

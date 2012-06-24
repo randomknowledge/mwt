@@ -3,7 +3,7 @@ import urllib
 from selenium import webdriver
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 
-from mwt.plugins.tasks import BaseTaskPlugin
+from . import BaseTaskPlugin
 
 
 __version__ = (0, 0, 1)
