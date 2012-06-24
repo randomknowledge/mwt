@@ -1,5 +1,6 @@
 import datetime
 from django.db import models
+from django.conf import settings
 from . import helper
 import re
 from .utils.time import get_tz
@@ -52,6 +53,9 @@ class Test(models.Model):
             d[str(opt.key)] = str(opt.value)
         return d
 
+    def plugin_list(self):
+        return [str(p.name) for p in Plugin.objects.filter(test=self)]
+
     def __unicode__(self):
         return self.description
 
@@ -90,6 +94,11 @@ class Testrun(models.Model):
         if self.state == 'pending' or self.state == 'running':
             return datetime.datetime.now(tz=get_tz()) - self.date_started
         return self.date_finished - self.date_started
+
+    def admin_state(self):
+        return '<img src="%smwt/admin/img/icon-%s.png" alt="%s" title="%s" style="margin-left: 10px" />' % (getattr(settings, 'STATIC_URL', '/static/'), self.state, self.state, self.state)
+    admin_state.allow_tags = True
+    admin_state.short_description = 'State'
 
     def __unicode__(self):
         return "%s: %s" % (str(self.test), str(self.plugin))
