@@ -1,7 +1,6 @@
 import re
 import urllib
 from selenium import webdriver
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 
 from . import BaseTaskPlugin
 
@@ -22,7 +21,8 @@ class Main(BaseTaskPlugin):
         re_url = re.compile(r'%s' % re_url_string, re.I)
 
         # TODO: Create generic Firefox profile with more than ten Google search results per page
-        browser = webdriver.Firefox(firefox_profile=FirefoxProfile(profile_directory='/home/flo/.mozilla/firefox/bfdcpq2t.default'))
+        #browser = webdriver.Firefox(firefox_profile=FirefoxProfile(profile_directory='/home/flo/.mozilla/firefox/bfdcpq2t.default'))
+        browser = webdriver.Firefox()
         try:
             browser.get("http://www.google.de/search?hl=de&%s" % urllib.urlencode({'q': search}))
             idx = 0
