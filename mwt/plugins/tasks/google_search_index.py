@@ -1,4 +1,4 @@
-from . import CasperJSTask
+from . import CasperJSTaskPlugin
 
 
 __version__ = (0, 0, 2)
@@ -10,7 +10,7 @@ Checks the position in google search for a given keyword.
 __params__ = ['search', 'url_regex']
 
 
-class Main(CasperJSTask):
+class Main(CasperJSTaskPlugin):
     def process(self):
         search = self.options.get('search')
         url_regex = self.options.get('url_regex')

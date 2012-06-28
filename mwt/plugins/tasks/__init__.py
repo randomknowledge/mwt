@@ -34,7 +34,7 @@ class BaseTaskPlugin(object):
         self.testrun.success(self.successmessage)
 
 
-class CasperJSTask(BaseTaskPlugin):
+class CasperJSTaskPlugin(BaseTaskPlugin):
 
     def __init__(self):
         self.PHANTOM_JS_BIN = settings.PHANTOM_JS_BIN or 'phantomjs'
