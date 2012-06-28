@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 from ...models import Test
 from ... import registered_plugins
 from ...models import Testrun
+from mwt.plugins.tasks import google_search_index
 from ...utils.log import logger
 
 
