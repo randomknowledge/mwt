@@ -1,11 +1,12 @@
-import re
-import urllib
-from selenium import webdriver
+from django.conf import settings
+import subprocess
+import os
+from django.utils import simplejson
 
 from . import BaseTaskPlugin
 
 
-__version__ = (0, 0, 1)
+__version__ = (0, 0, 2)
 __author__ = 'Florian Finke <flo@randomknowledge.org>'
 __pluginname__ = 'MWT Google Search Index Plugin'
 __description__ = """MWT Google Search Index Plugin
@@ -16,31 +17,32 @@ __params__ = ['search', 'url_regex']
 
 class Main(BaseTaskPlugin):
     def process(self):
+
+        PHANTOM_JS_BIN = settings.PHANTOM_JS_BIN or 'phantomjs'
+        CASPER_JS_BIN = settings.CASPER_JS_BIN or 'casperjs'
+        os.environ['PHANTOMJS_EXECUTABLE']  = PHANTOM_JS_BIN
+
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        cmd = ('%s %s/js/google_search_index.js' % (CASPER_JS_BIN, current_dir)).split()
+
         search = self.options.get('search')
-        re_url_string = self.options.get('url_regex')
-        re_url = re.compile(r'%s' % re_url_string, re.I)
+        url_regex = self.options.get('url_regex')
 
-        # TODO: Create generic Firefox profile with more than ten Google search results per page
-        #browser = webdriver.Firefox(firefox_profile=FirefoxProfile(profile_directory='/home/flo/.mozilla/firefox/bfdcpq2t.default'))
-        browser = webdriver.Firefox()
+        cmd.append(search)
+        cmd.append(url_regex)
+
         try:
-            browser.get("http://www.google.de/search?hl=de&%s" % urllib.urlencode({'q': search}))
-            idx = 0
-            match = None
-            for li in browser.find_elements_by_xpath("//li[@class='g']"):
-                idx += 1
-                anchors = li.find_elements_by_xpath(".//a")
-                for anchor in anchors:
-                    href = anchor.get_attribute('href')
-                    if href and re.match(re_url,href):
-                        match = idx
-                        break
-        except Exception, e:
-            raise e
-        finally:
-            browser.close()
+            output = subprocess.check_output(cmd)
+        except AttributeError:
+            output = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
-        if match:
-            self.successmessage = "Search for '%s': Found '%s' at position %d" % (search, re_url_string, match)
+        result = simplejson.loads(output)
+
+        if result.get('success'):
+            idx = result.get('searchIndex', 0)
+            if idx > 0:
+                self.successmessage = "'%s' found at position %d." % (search, idx)
+            else:
+                self.successmessage = "'%s' is not in the first %d results." % (search, result.get('maxIndex'))
         else:
-            self.successmessage = "Search for '%s': '%s' not found :(" % (search, re_url_string)
+            raise Exception("CasperJS was unsuccessful: %s" % result.get('message'))

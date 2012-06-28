@@ -1,6 +1,5 @@
 Django==1.4
 South==0.7.5
 pytz
-selenium==2.24.0
 html5lib==0.95
 lxml==2.3.4
