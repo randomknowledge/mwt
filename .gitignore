@@ -12,6 +12,7 @@
 .idea/
 virtualenv/
 mwtserver/
+phantomjs/
 
 # Files #
 #########
