@@ -1,42 +1,15 @@
-var jsPath = 'js/';
+// BASE INCLUDE
+phantom.injectJs( require('system').args[3].replace(/\/[^\/]*$/, '/lib/mwt.js') );
 
-var system = require('system');
-for( sys in system.args )
+
+
+if( !casper.cli.has('search') || !casper.cli.has('url_pattern') )
 {
-	var m = system.args[sys].match(/^(.+)google_search_index\.js$/);
-	if( m )
-	{
-		jsPath = m[1];
-	}
+	out( {'success': false, 'message': 'Usage script.js --search=<search> --url_pattern=<url_pattern>'} );
 }
 
-var casper = require("casper").create({
-	clientScripts: [
-		jsPath + 'jquery-1.7.1.min.js'
-	],
-	logLevel: 'info',
-	pageSettings: {
-		'userAgent': "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.43 Safari/536.11"
-	},
-	viewportSize: {width: 800, height: 600},
-	onError: function(self, msg) {
-		out( {'success': false, 'message': msg} );
-	}
-});
-
-function out(obj)
-{
-	console.log( JSON.stringify(obj) );
-	casper.exit();
-}
-
-if( !casper.cli.has(1) )
-{
-	out( {'success': false, 'message': 'Usage script.js <search> <urlPattern>'} );
-}
-
-var search = casper.cli.get(0);
-var urlPattern = casper.cli.get(1);
+var search = casper.cli.get('search');
+var urlPattern = casper.cli.get('url_pattern');
 
 function findLink(urlPattern) {
 	var lis = $('li.g');
@@ -64,13 +37,13 @@ var processPage = function() {
 
 	if( currentPage >= 5 )
 	{
-		out( {'success': true, 'searchIndex': 0, 'maxIndex': (10 * currentPage), 'args': {'search': search, 'urlPattern': urlPattern}} );
+		out( {'success': true, 'searchIndex': 0, 'maxIndex': (10 * currentPage), 'args': {'search': search, 'url_pattern': urlPattern}} );
 	}
 
 	var searchIndex = this.evaluate(findLink, {urlPattern: urlPattern});
 	if( searchIndex )
 	{
-		out( {'success': true, 'searchIndex': (searchIndex * currentPage), 'args': {'search': search, 'urlPattern': urlPattern}} );
+		out( {'success': true, 'searchIndex': (searchIndex * currentPage), 'args': {'search': search, 'url_pattern': urlPattern}} );
 	}
 
 	if( this.exists("#pnnext") )
@@ -85,7 +58,7 @@ var processPage = function() {
 			});
 		});
 	} else {
-		out( {'success': true, 'searchIndex': 0, 'maxIndex': (10 * currentPage), 'args': {'search': search, 'urlPattern': urlPattern}} );
+		out( {'success': true, 'searchIndex': 0, 'maxIndex': (10 * currentPage), 'args': {'search': search, 'url_pattern': urlPattern}} );
 	}
 };
 

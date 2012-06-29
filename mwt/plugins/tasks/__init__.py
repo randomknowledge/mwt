@@ -43,14 +43,18 @@ class CasperJSTaskPlugin(BaseTaskPlugin):
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.cmd = ('%s %s/js/%s.js' % (self.CASPER_JS_BIN, self.current_dir, self.__class__.__module__.split('.').pop())).split()
         self.javascript_result = {}
+        self.javascript_result_string = ''
 
     def addJavaScriptParameter(self, param):
         self.cmd.append(param)
 
+    def addNamedJavaScriptParameter(self, key, value):
+        self.cmd.append("--%s=%s" % (key, value))
+
     def runJavaScript(self):
         try:
-            output = subprocess.check_output(self.cmd)
+            self.javascript_result_string = subprocess.check_output(self.cmd)
         except AttributeError:
-            output = subprocess.Popen(self.cmd, stdout=subprocess.PIPE).communicate()[0]
+            self.javascript_result_string = subprocess.Popen(self.cmd, stdout=subprocess.PIPE).communicate()[0]
 
-        self.javascript_result = simplejson.loads(output)
+        self.javascript_result = simplejson.loads(self.javascript_result_string)
