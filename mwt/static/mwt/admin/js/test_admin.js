@@ -15,7 +15,7 @@ if( !Array.indexOf )
         function findPluginRows(id)
         {
             found = [];
-            rows    = $('.form-row.dynamic-test :selected');
+            rows    = $('#test-group .form-row.dynamic-test :selected');
             for( var i = 0; i < rows.length; i++ )
             {
                 if( $(rows[i]).val() == id )
@@ -29,7 +29,7 @@ if( !Array.indexOf )
         function findUnassignedRows()
         {
             found = [];
-            rows    = $('.form-row.dynamic-test :selected');
+            rows    = $('#test-group .form-row.dynamic-test :selected');
             for( var i = 0; i < rows.length; i++ )
             {
                 if( $(rows[i]).val() == '' )
@@ -89,7 +89,7 @@ if( !Array.indexOf )
 
                 if( params.length )
                 {
-                    $('.add-row a').click();
+                    $('#test-group .add-row a').click();
                     $('#id_plugins').change();
                 }
             }

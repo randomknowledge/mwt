@@ -13,6 +13,14 @@ RUN_STATUS_CHOICES = (
     ('fail', u'Fail'),
 )
 
+RUN_REPEAT_CHOICES = (
+    ('no', u"Don't repeat"),
+    ('minute', u'every Minute'),
+    ('hour', u'every Hour'),
+    ('day', u'every Day'),
+    ('year', u'every Year'),
+)
+
 
 class Client(models.Model):
     name = models.CharField(max_length=96, null=False, blank=False, unique=True)
@@ -69,6 +77,7 @@ class Testrun(models.Model):
     message = models.TextField(null=True, blank=True)
     test = models.ForeignKey(Test, related_name='+')
     plugin = models.ForeignKey('Plugin', related_name='+')
+    schedule = models.ForeignKey('RunSchedule', related_name='+')
 
     def start(self):
         self.date_started = datetime.datetime.now(tz=get_tz())
@@ -153,5 +162,16 @@ class PluginOption(models.Model):
         return d
 
 
-#class RunShedule(models.Model):
-#    run_every = models.IntegerField(verbose_name='Run every x seconds...', blank=True, null=True)
+class RunSchedule(models.Model):
+    datetime = models.DateTimeField()
+    repeat = models.CharField(
+                max_length=32, choices=RUN_REPEAT_CHOICES, default='no')
+    test = models.ForeignKey(Test)
+
+    def __unicode__(self):
+        if self.repeat == 'no':
+            add = "Run once on %s" % self.datetime
+        else:
+            add = "Run every %s" % self.repeat
+
+        return "%s: %s" % (self.test, add)
