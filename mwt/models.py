@@ -1,25 +1,9 @@
+import re
 import datetime
 from django.db import models
 from django.conf import settings
-from . import helper
-import re
+from . import helper, constants
 from .utils.time import get_tz
-
-
-RUN_STATUS_CHOICES = (
-    ('pending', u'Pending'),
-    ('running', u'Running'),
-    ('success', u'Success'),
-    ('fail', u'Fail'),
-)
-
-RUN_REPEAT_CHOICES = (
-    ('no', u"Don't repeat"),
-    ('minute', u'every Minute'),
-    ('hour', u'every Hour'),
-    ('day', u'every Day'),
-    ('year', u'every Year'),
-)
 
 
 class Client(models.Model):
@@ -69,28 +53,27 @@ class Test(models.Model):
 
 
 class Testrun(models.Model):
-    date_created = models.DateTimeField(auto_created=True, auto_now_add=True)
+    date_created = models.DateTimeField(auto_created=True, auto_now_add=True, editable=True)
     date_started = models.DateTimeField(blank=True, null=True)
     date_finished = models.DateTimeField(blank=True, null=True)
     state = models.CharField(
-            max_length=32, choices=RUN_STATUS_CHOICES, default='pending')
+            max_length=32, choices=constants.RUN_STATUS_CHOICES, default=constants.RUN_STATUS_PENDING)
     message = models.TextField(null=True, blank=True)
-    test = models.ForeignKey(Test, related_name='+')
     plugin = models.ForeignKey('Plugin', related_name='+')
     schedule = models.ForeignKey('RunSchedule', related_name='+')
 
     def start(self):
         self.date_started = datetime.datetime.now(tz=get_tz())
-        self.state = 'running'
+        self.state = constants.RUN_STATUS_RUNNING
         self.save()
 
     def end(self, success, message):
         self.date_finished = datetime.datetime.now(tz=get_tz())
         self.message = message
         if success:
-            self.state = 'success'
+            self.state = constants.RUN_STATUS_SUCCESS
         else:
-            self.state = 'fail'
+            self.state = constants.RUN_STATUS_FAIL
         self.save()
 
     def success(self, message=''):
@@ -102,17 +85,23 @@ class Testrun(models.Model):
     def duration(self):
         if self.date_started is None:
             return datetime.timedelta(seconds=0)
-        if self.state == 'pending' or self.state == 'running':
+        if self.state == constants.RUN_STATUS_PENDING or self.state == constants.RUN_STATUS_RUNNING:
             return datetime.datetime.now(tz=get_tz()) - self.date_started
         return self.date_finished - self.date_started
 
     def admin_state(self):
-        return '<img src="%smwt/admin/img/icon-%s.png" alt="%s" title="%s" style="margin-left: 10px" />' % (getattr(settings, 'STATIC_URL', '/static/'), self.state, self.state, self.state)
+        return '<img src="%smwt/admin/img/icon-%s.png" alt="%s" title="%s" style="margin-left: 10px" />'\
+            % (
+                getattr(settings, 'STATIC_URL', '/static/'),
+                self.state,
+                constants.RUN_STATES.get(self.state),
+                constants.RUN_STATES.get(self.state)
+        )
     admin_state.allow_tags = True
     admin_state.short_description = 'State'
 
     def __unicode__(self):
-        return "%s: %s" % (str(self.test), str(self.plugin))
+        return "%s: %s" % (str(self.schedule), str(self.plugin))
 
 
 class Plugin(models.Model):
@@ -164,14 +153,14 @@ class PluginOption(models.Model):
 
 class RunSchedule(models.Model):
     datetime = models.DateTimeField()
-    repeat = models.CharField(
-                max_length=32, choices=RUN_REPEAT_CHOICES, default='no')
+    repeat = models.CharField(max_length=32, choices=constants.RUN_REPEAT_CHOICES, default='no')
     test = models.ForeignKey(Test)
+    paused = models.BooleanField(default=False)
 
     def __unicode__(self):
         if self.repeat == 'no':
             add = "Run once on %s" % self.datetime
         else:
-            add = "Run every %s" % self.repeat
+            add = "Run every %s" % constants.RUN_SCHEDULES.get(self.repeat).get('description', self.repeat)
 
         return "%s: %s" % (self.test, add)

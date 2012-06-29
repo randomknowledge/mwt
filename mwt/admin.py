@@ -25,9 +25,9 @@ class ClientAdmin(admin.ModelAdmin):
 
 class TestrunAdmin(admin.ModelAdmin):
     list_display = ('admin_state', 'date_created', 'date_started',
-            'date_finished', 'duration', 'test', 'plugin', 'schedule')
+            'date_finished', 'duration', 'plugin', 'schedule')
     list_display_links = ('date_created', 'date_started',
-                          'date_finished', 'duration', 'test', 'plugin', 'schedule')
+                          'date_finished', 'duration', 'plugin', 'schedule')
     list_filter = ('state', 'date_created', 'date_started', 'date_finished' )
     search_fields = ('test__description', )
 

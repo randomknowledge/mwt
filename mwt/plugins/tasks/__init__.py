@@ -13,7 +13,7 @@ class BaseTaskPlugin(object):
 
     def run(self, run_obj, **kwargs):
         self.testrun = run_obj
-        self.options = run_obj.test.get_options_for_plugin_dsn(plugin_dsn=str(self.__module__))
+        self.options = run_obj.schedule.test.get_options_for_plugin_dsn(plugin_dsn=str(self.__module__))
 
         try:
             self._startrun()
@@ -23,6 +23,8 @@ class BaseTaskPlugin(object):
             self.testrun.fail(get_stacktrace_string())
         else:
             self._endrun()
+
+        return self.testrun.message
 
     def _startrun(self):
         self.testrun.start()

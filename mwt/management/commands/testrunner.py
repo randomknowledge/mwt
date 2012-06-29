@@ -1,10 +1,18 @@
 from time import sleep
 from django.core.management.base import BaseCommand
-from ...models import Test
-from ... import registered_plugins
+from ... import registered_plugins, constants
 from ...models import Testrun, RunSchedule
-from mwt.plugins.tasks import google_search_index
+from mwt.utils.exceptions import get_stacktrace_string
 from ...utils.log import logger
+from ...utils.time import get_tznow
+from ...utils.queue import enqueue
+
+
+try:
+    from procname import setprocname
+except ImportError:
+    def setprocname(*args, **kwargs):
+        pass
 
 
 class Command(BaseCommand):
@@ -13,43 +21,41 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logger.info('Starting %s' % self.help)
 
-        for schedule in RunSchedule.objects.all():
-            runs = Testrun.objects.filter(test=schedule.test)
-            if schedule.repeat == 'no':
-                pass
-                #runs = runs.filter(date_created)
-            if not runs:
-                logger.info("Running Test %s" % schedule.test)
-                for plugin in schedule.test.plugins.all():
-                    run = Testrun(test=schedule.test, plugin=plugin, schedule=schedule)
-                    run.save()
-                    logger.info("Executing Plugin %s" % plugin)
-                    registered_plugins.get(str(plugin.dsn)).run(run)
-                    if run.state == 'success':
-                        logger.info("Plugin %s completed successfully: %s" % (plugin, run.message))
-                    else:
-                        logger.info("Plugin %s failed: %s" % (plugin, run.message))
-
-        """
         try:
             while True:
+                logger.info('Checking Schedules...')
                 try:
-                    tests = Test.objects.all()
-                except Exception:
-                    logger.fatal("Unable to get Tests")
-                else:
-                    for test in tests:
-                        logger.info("Running Test %s" % test)
-                        for plugin in test.plugins.all():
-                            run = Testrun(test=test, plugin=plugin)
-                            run.save()
-                            logger.info("Executing Plugin %s" % plugin)
-                            registered_plugins.get(str(plugin.dsn)).run(run)
-                            if run.state == 'success':
-                                logger.info("Plugin %s completed successfully: %s" % (plugin, run.message))
+                    for schedule in RunSchedule.objects.filter(paused=False):
+                        try:
+                            runs = Testrun.objects.filter(schedule=schedule)
+                            if schedule.repeat != 'no':
+                                runs = runs.filter(date_created__gt=get_tznow() - constants.RUN_SCHEDULES.get(schedule.repeat).get('delta'))
+
+                            if runs:
+                                logger.info("No pending runs for Schedule '%s'" % schedule)
                             else:
-                                logger.info("Plugin %s failed: %s" % (plugin, run.message))
-                sleep(225)
+                                logger.info("Running Test '%s'" % schedule.test)
+                                try:
+                                    for plugin in schedule.test.plugins.all():
+                                        run_obj = Testrun(schedule=schedule, plugin=plugin)
+                                        run_obj.save()
+                                        logger.info("Executing Plugin %s" % plugin)
+
+                                        self.enqueue_plugin( str(plugin.dsn), run_obj )
+                                except Exception, e:
+                                    logger.fatal("Unable to get Plugins for Test '%s': %s" % (schedule.test, e))
+                        except Exception:
+                            logger.fatal("Unable to get Runs for Schedule '%s'" % schedule)
+                except Exception:
+                    logger.fatal("Unable to get Schedules")
+
+                sleep(5)
         except KeyboardInterrupt:
             logger.info("%s exiting..." % self.help)
-        """
+
+
+    def enqueue_plugin(self, plugin, run_obj):
+        enqueue(run_plugin, registered_plugins.get(plugin), run_obj)
+
+def run_plugin(plugin_obj, run_obj):
+    return plugin_obj.run(run_obj)

@@ -3,3 +3,4 @@ South==0.7.5
 pytz
 html5lib==0.95
 lxml==2.3.4
+-e git+https://github.com/nvie/rq.git#egg=rq
