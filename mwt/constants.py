@@ -2,8 +2,6 @@ from datetime import timedelta
 from django.conf import settings
 
 
-TASK_TIMEOUT = 180 # seconds
-
 RUN_STATUS_PENDING = 'pending'
 RUN_STATUS_RUNNING = 'running'
 RUN_STATUS_SUCCESS = 'success'
