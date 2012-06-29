@@ -2,17 +2,9 @@ from time import sleep
 from django.core.management.base import BaseCommand
 from ... import registered_plugins, constants
 from ...models import Testrun, RunSchedule
-from mwt.utils.exceptions import get_stacktrace_string
 from ...utils.log import logger
 from ...utils.time import get_tznow
 from ...utils.queue import enqueue
-
-
-try:
-    from procname import setprocname
-except ImportError:
-    def setprocname(*args, **kwargs):
-        pass
 
 
 class Command(BaseCommand):
