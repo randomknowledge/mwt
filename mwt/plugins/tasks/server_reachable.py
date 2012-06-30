@@ -4,7 +4,7 @@ from django.utils import simplejson
 from ..tasks import BaseTaskPlugin
 
 
-__version__ = (0, 1, 10)
+__version__ = (0, 1, 3)
 __author__ = 'Florian Finke <flo@randomknowledge.org>'
 __pluginname__ = 'MWT Server Reachabe Plugin'
 __description__ = """MWT Server Reachabe Plugin.
@@ -34,20 +34,30 @@ class Main(BaseTaskPlugin):
         opener = urllib2.build_opener(NoRedirectHandler())
         urllib2.install_opener(opener)
 
-        url = urllib2.urlopen(server, None, 30)
-        info = url.info()
-        headers = str(info).strip()
+        exception = None
+        headers = None
 
-        elapsed = datetime.utcnow() - t
-        success = True
-        message = "Server %s reponded in %s" % (server, elapsed),
-        if info.get('location',''):
+        try:
+            url = urllib2.urlopen(server, None, 30)
+        except urllib2.URLError, e:
             success = False
-            message = "Request on %s got header location: %s" % (server, info.get('location'))
+            elapsed = datetime.utcnow() - t
+            message = "Server %s seams to be down. Didn't answer after %s" % (server, elapsed)
+            exception = str(e.reason)
+        else:
+            info = url.info()
+            headers = str(info).strip()
+            elapsed = datetime.utcnow() - t
+            success = True
+            message = "Server %s reponded in %s" % (server, elapsed),
+            if info.get('location',''):
+                success = False
+                message = "Request on %s got header location: %s" % (server, info.get('location'))
 
         self.result = simplejson.dumps({
             'success': success,
             'message': message,
             'headers': headers,
+            'exception': exception,
             })
 
