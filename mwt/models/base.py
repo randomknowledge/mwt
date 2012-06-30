@@ -1,14 +1,18 @@
-import re
 import datetime
-from django.db import models
 from django.conf import settings
-from . import helper, constants
-from .utils.time import get_tz
+from django.db import models
+from .. import constants
+from django.utils import simplejson
+from .plugins import TaskPluginOption, TaskPlugin
+from ..utils.time import get_tz
 
 
 class Client(models.Model):
     name = models.CharField(max_length=96, null=False, blank=False, unique=True)
     description = models.TextField(blank=True)
+
+    class Meta:
+        app_label = 'mwt'
 
     def __unicode__(self):
         return self.name
@@ -20,6 +24,9 @@ class Website(models.Model):
     description = models.TextField(blank=True)
     client = models.ForeignKey(Client)
 
+    class Meta:
+        app_label = 'mwt'
+
     def __unicode__(self):
         return "%s on %s" % (self.name, self.url)
 
@@ -27,16 +34,20 @@ class Website(models.Model):
 class Test(models.Model):
     website = models.ForeignKey(Website)
     description = models.CharField(max_length=255, null=False, blank=False)
-    plugins = models.ManyToManyField('Plugin')
+    tasks = models.ManyToManyField('TaskPlugin', related_name='+')
+    notifications = models.ManyToManyField('NotificationPlugin', related_name='+', null=True, blank=True)
 
-    def get_options_for_plugin(self, plugin):
+    class Meta:
+        app_label = 'mwt'
+
+    def get_options_for_task_dsn(self, task_dsn):
         return self._plugin_opts_to_dict(
-                PluginOption.objects.filter(test=self, plugin=plugin)
+            TaskPluginOption.objects.filter(plugin=self.tasks.get(dsn=task_dsn))
         )
 
-    def get_options_for_plugin_dsn(self, plugin_dsn):
+    def get_options_for_notification_dsn(self, notification_dsn):
         return self._plugin_opts_to_dict(
-                PluginOption.objects.filter(test=self, plugin__dsn=plugin_dsn)
+            NotificationPluginOption.objects.filter(plugin=self.notifications.get(dsn=notification_dsn))
         )
 
     def _plugin_opts_to_dict(self, opts):
@@ -45,8 +56,11 @@ class Test(models.Model):
             d[str(opt.key)] = str(opt.value)
         return d
 
-    def plugin_list(self):
-        return [str(p.name) for p in Plugin.objects.filter(test=self)]
+    def task_list(self):
+        return [str(p.name) for p in self.tasks.all()]
+
+    def notification_list(self):
+        return [str(p.name) for p in self.notifications.all()]
 
     def __unicode__(self):
         return self.description
@@ -57,30 +71,33 @@ class Testrun(models.Model):
     date_started = models.DateTimeField(blank=True, null=True)
     date_finished = models.DateTimeField(blank=True, null=True)
     state = models.CharField(
-            max_length=32, choices=constants.RUN_STATUS_CHOICES, default=constants.RUN_STATUS_PENDING)
-    message = models.TextField(null=True, blank=True)
-    plugin = models.ForeignKey('Plugin', related_name='+')
+        max_length=32, choices=constants.RUN_STATUS_CHOICES, default=constants.RUN_STATUS_PENDING)
+    result = models.TextField(null=True, blank=True)
+    task = models.ForeignKey('TaskPlugin', related_name='+')
     schedule = models.ForeignKey('RunSchedule', related_name='+')
+
+    class Meta:
+        app_label = 'mwt'
 
     def start(self):
         self.date_started = datetime.datetime.now(tz=get_tz())
         self.state = constants.RUN_STATUS_RUNNING
         self.save()
 
-    def end(self, success, message):
+    def end(self, success, result):
         self.date_finished = datetime.datetime.now(tz=get_tz())
-        self.message = message
+        self.result = result
         if success:
             self.state = constants.RUN_STATUS_SUCCESS
         else:
             self.state = constants.RUN_STATUS_FAIL
         self.save()
 
-    def success(self, message=''):
-        self.end(True, message)
+    def success(self, result="{'success': true}"):
+        self.end(True, result)
 
-    def fail(self, message=''):
-        self.end(False, message)
+    def fail(self, result="{'success': false}"):
+        self.end(False, result)
 
     def duration(self):
         if self.date_started is None:
@@ -89,66 +106,37 @@ class Testrun(models.Model):
             return datetime.datetime.now(tz=get_tz()) - self.date_started
         return self.date_finished - self.date_started
 
-    def admin_state(self):
+    def stage_image(self, state):
         return '<img src="%smwt/admin/img/icon-%s.png" alt="%s" title="%s" style="margin-left: 10px" />'\
-            % (
-                getattr(settings, 'STATIC_URL', '/static/'),
-                self.state,
-                constants.RUN_STATES.get(self.state),
-                constants.RUN_STATES.get(self.state)
-        )
+        % (
+            getattr(settings, 'STATIC_URL', '/static/'),
+            state,
+            constants.RUN_STATES.get(state),
+            constants.RUN_STATES.get(state)
+            )
+
+    def admin_state(self):
+        return self.stage_image(self.state)
     admin_state.allow_tags = True
     admin_state.short_description = 'State'
 
-    def __unicode__(self):
-        return "%s: %s" % (str(self.schedule), str(self.plugin))
+    def admin_result(self):
+        success = False
+        try:
+            result = simplejson.loads(self.result)
+            success = result.get('success', False)
+        except Exception:
+            pass
 
-
-class Plugin(models.Model):
-    dsn = models.CharField(max_length=255, null=False, blank=False, unique=True)
-    name = models.CharField(max_length=120, blank=True, default='')
-    author = models.CharField(max_length=120, blank=True, default='')
-    description = models.TextField(blank=True)
-    versionfield = models.CharField(max_length=12, null=True, default=None)
-    params = models.TextField(null=True, blank=True, editable=False)
-
-    def __unicode__(self):
-        return "%s (%s) Version %s" % (
-                getattr(self, 'name', self.dsn),
-                getattr(self, 'name', self.dsn),
-                self.versionstring
-        )
-
-    def save(self, *args, **kwargs):
-        self.versionfield = re.sub(r'[^\d,]', '', str(self.versionfield))
-        super(Plugin, self).save(*args, **kwargs)
-
-    @property
-    def version(self):
-        return helper.version(str(self.versionfield))
-
-    @property
-    def versionstring(self):
-        return helper.versionstring(str(self.versionfield))
-
-    @property
-    def versionnumber(self):
-        return helper.versionnumber(str(self.versionfield))
-
-
-class PluginOption(models.Model):
-    plugin = models.ForeignKey(Plugin, related_name='plugin')
-    test = models.ForeignKey(Test, related_name='test')
-    key = models.CharField(max_length=64, null=False, blank=False)
-    value = models.CharField(max_length=255, null=False, blank=False)
+        if success:
+            return self.stage_image(constants.RUN_STATUS_SUCCESS)
+        else:
+            return self.stage_image(constants.RUN_STATUS_FAIL)
+    admin_result.allow_tags = True
+    admin_result.short_description = 'Result'
 
     def __unicode__(self):
-        return "%s => %s" % (self.key, self.value)
-
-    def as_dict(self):
-        d = {}
-        d[str(self.key)] = str(self.value)
-        return d
+        return "%s: %s" % (str(self.schedule), str(self.task))
 
 
 class RunSchedule(models.Model):
@@ -156,6 +144,10 @@ class RunSchedule(models.Model):
     repeat = models.CharField(max_length=32, choices=constants.RUN_REPEAT_CHOICES, default='no')
     test = models.ForeignKey(Test)
     paused = models.BooleanField(default=False)
+    run_id = models.IntegerField(default=0)
+
+    class Meta:
+        app_label = 'mwt'
 
     def __unicode__(self):
         if self.repeat == 'no':

@@ -1,16 +1,17 @@
 import sys
-from .models import Plugin
+from .models.plugins import TaskPlugin, NotificationPlugin
 from . import helper
 from .utils.exceptions import get_stacktrace_string
 from .plugins.tasks import BaseTaskPlugin
+from .plugins.notifications import BaseNotificationPlugin
 from .utils.log import logger
 import os
 import re
 
 
-def import_plugins():
+def import_plugins(type):
     s_plugins = 'plugins'
-    s_tasks = 'tasks'
+    s_tasks = type
     imported = []
     parentmodule = "mwt.%s.%s" % (s_plugins, s_tasks)
     basedir = os.path.dirname(__file__)
@@ -28,11 +29,12 @@ def import_plugins():
                     logger.error("Failed to import Plugin %s: %s" %
                             (mod, get_stacktrace_string()))
                 else:
-                    if hasattr(i, 'Main') and issubclass(i.Main, BaseTaskPlugin):
+                    if (type == 'tasks' and hasattr(i, 'Main') and issubclass(i.Main, BaseTaskPlugin))\
+                    or (type == 'notifications' and hasattr(i, 'Main') and issubclass(i.Main, BaseNotificationPlugin)):
                         imported.append(i)
                     else:
                         logger.error("Plugin '%s' doesn't extend "
-                                "'BaseTaskPlugin' or doesn't have "
+                                "'BaseTaskPlugin/BaseNotificationPlugin' or doesn't have "
                                 "a 'Main' class!" % mod)
                         try:
                             del sys.modules[dsn]
@@ -43,11 +45,14 @@ def import_plugins():
     return imported
 
 
-def register_plugins():
+def register_plugins(type):
     registered_plugins = {}
-    for plugin in import_plugins():
-        logger.log('debug', "Registering Task Plugin '%s'" % plugin.__name__)
-        p, created = Plugin.objects.get_or_create(dsn=plugin.__name__)
+    for plugin in import_plugins(type):
+        logger.log('debug', "Registering Plugin '%s'" % plugin.__name__)
+        if type == 'tasks':
+            p, created = TaskPlugin.objects.get_or_create(dsn=plugin.__name__)
+        else:
+            p, created = NotificationPlugin.objects.get_or_create(dsn=plugin.__name__)
 
         if created or p.versionnumber < helper.versionnumber(plugin.__version__):
             p.name = str(plugin.__pluginname__)

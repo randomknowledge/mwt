@@ -20,3 +20,31 @@ def enqueue(function, *args, **kwargs):
     queue = kwargs.pop('queue', constants.REDIS_SETTINGS.get('queue', 'default'))
     timeout = kwargs.pop('timeout', 180)
     return Queue(queue).enqueue(function, *args, timeout=timeout, **kwargs)
+
+
+def set_value(key, value):
+    setup_rq_connection()
+    get_current_connection().set(key, value)
+
+
+def get_value(key):
+    setup_rq_connection()
+    return get_current_connection().get(key)
+
+
+def set_run_finished(schedule_run_id):
+    v = get_run_counter(schedule_run_id)
+    set_value("mwt:schedule:%d" % schedule_run_id, v + 1)
+
+
+def get_run_counter(schedule_run_id):
+    v = 0
+    try:
+        v = int(get_value("mwt:schedule:%d" % schedule_run_id))
+    except Exception:
+        pass
+    return v
+
+def clear_run(schedule_run_id):
+    setup_rq_connection()
+    get_current_connection().delete(schedule_run_id)

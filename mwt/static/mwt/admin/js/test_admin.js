@@ -12,10 +12,17 @@ if( !Array.indexOf )
 
 (function($) {
     $(document).ready(function(){
-        function findPluginRows(id)
+        function findPluginRows(id, type)
         {
+            var base;
+            if( type == 'tasks' )
+            {
+                base    = $("h2:contains('Task plugin')").parent();
+            } else {
+                base    = $("h2:contains('Notification plugin')").parent();
+            }
             found = [];
-            rows    = $('#test-group .form-row.dynamic-test :selected');
+            rows    = base.find('tbody tr.form-row').not('.empty-form').find('.field-plugin option:selected');
             for( var i = 0; i < rows.length; i++ )
             {
                 if( $(rows[i]).val() == id )
@@ -23,13 +30,21 @@ if( !Array.indexOf )
                     found.push( $(rows[i]).parent().parent().parent()[0] );
                 }
             }
+
             return found;
         }
 
-        function findUnassignedRows()
+        function findUnassignedRows(type)
         {
             found = [];
-            rows    = $('#test-group .form-row.dynamic-test :selected');
+            var base;
+            if( type == 'tasks' )
+            {
+                base    = $("h2:contains('Task plugin')").parent();
+            } else {
+                base    = $("h2:contains('Notification plugin')").parent();
+            }
+            rows    = base.find('tbody tr.form-row').not('.empty-form').find('.field-plugin option:selected');
             for( var i = 0; i < rows.length; i++ )
             {
                 if( $(rows[i]).val() == '' )
@@ -40,13 +55,13 @@ if( !Array.indexOf )
             return found;
         }
 
-        function checkPluginId(id)
+        function checkPluginId(id, type)
         {
             plugin_id = id;
-            if( plugin_params[plugin_id] )
+            if( plugin_params[type][plugin_id] )
             {
-                pluginrows = findPluginRows(plugin_id);
-                params = plugin_params[plugin_id].slice(0);
+                pluginrows = findPluginRows(plugin_id, type);
+                params = plugin_params[type][plugin_id].slice(0);
 
                 $(pluginrows).each(function(idx, ele){
                     var index   = params.indexOf($(ele).find('.field-key input').val());
@@ -69,7 +84,7 @@ if( !Array.indexOf )
                     }
                     var pluginrow = $(pluginrows[j]);
                     var key = pluginrow.find('.field-key input').val();
-                    if( plugin_params[plugin_id].indexOf(key) == -1 )
+                    if( plugin_params[type][plugin_id].indexOf(key) == -1 )
                     {
                         var p = params.shift();
                         pluginrow.find('.field-key input').val(p);
@@ -78,30 +93,36 @@ if( !Array.indexOf )
 
                 if( params.length )
                 {
-                    pluginrows = findUnassignedRows();
+                    pluginrows = findUnassignedRows(type);
                     for( j = 0; j < pluginrows.length; j++ )
                     {
                         pluginrow = $(pluginrows[j]);
                         pluginrow.find('.field-plugin select').val(plugin_id);
-                        $('#id_plugins').change();
+                        $('#id_' + type).change();
                     }
                 }
 
                 if( params.length )
                 {
-                    $('#test-group .add-row a').click();
-                    $('#id_plugins').change();
+                    if(type == 'tasks')
+                    {
+                        $("h2:contains('Task plugin')").parent().find('tr.add-row a').click();
+                    } else {
+                        $("h2:contains('Notification plugin')").parent().find('tr.add-row a').click();
+                    }
+                    $('#id_' + type).change();
                 }
             }
         }
 
-        $('#id_plugins').change(function(event){
+        $('#id_tasks, #id_notifications').change(function(event){
             vals = $(this).val();
+            var type = $(this).attr('id').replace(/^id_/,'');
             if( vals != null )
             {
                 for( var i = 0; i < vals.length; i++ )
                 {
-                    checkPluginId(vals[i]);
+                    checkPluginId(vals[i], type);
                 }
             }
         });

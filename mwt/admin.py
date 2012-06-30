@@ -1,9 +1,15 @@
 from django.contrib import admin
-from .models import Client, Website, Test, Testrun, Plugin, PluginOption, RunSchedule
+from .models.base import RunSchedule, Client, Website, Test, Testrun
+from .models.plugins import TaskPlugin, NotificationPlugin, TaskPluginOption, NotificationPluginOption
 
 
-class PluginOptionInline(admin.TabularInline):
-    model = PluginOption
+class TaskPluginOptionInline(admin.TabularInline):
+    model = TaskPluginOption
+    extra = 0
+
+
+class NotificationPluginOptionInline(admin.TabularInline):
+    model = NotificationPluginOption
     extra = 0
 
 
@@ -24,10 +30,10 @@ class ClientAdmin(admin.ModelAdmin):
 
 
 class TestrunAdmin(admin.ModelAdmin):
-    list_display = ('admin_state', 'date_created', 'date_started',
-            'date_finished', 'duration', 'plugin', 'schedule')
+    list_display = ('admin_state', 'admin_result', 'date_created', 'date_started',
+            'date_finished', 'duration', 'task', 'schedule')
     list_display_links = ('date_created', 'date_started',
-                          'date_finished', 'duration', 'plugin', 'schedule')
+                          'date_finished', 'duration', 'task', 'schedule')
     list_filter = ('state', 'date_created', 'date_started', 'date_finished' )
     search_fields = ('test__description', )
 
@@ -36,10 +42,10 @@ class TestrunAdmin(admin.ModelAdmin):
 
 
 class TestAdmin(admin.ModelAdmin):
-    inlines = (PluginOptionInline, RunScheduleInline)
+    inlines = (TaskPluginOptionInline, NotificationPluginOptionInline, RunScheduleInline)
     change_form_template = 'admin/test_change_form.html'
-    list_display = ('description', 'plugin_list', 'website')
-    list_display_links = ('description', 'plugin_list', 'website')
+    list_display = ('description', 'task_list', 'notification_list', 'website')
+    list_display_links = ('description', 'task_list', 'notification_list', 'website')
 
     class Media:
         js = [ 'mwt/admin/js/test_admin.js', ]
@@ -69,5 +75,6 @@ admin.site.register(Client, ClientAdmin)
 admin.site.register(Website, WebsiteAdmin)
 admin.site.register(Test, TestAdmin)
 admin.site.register(Testrun, TestrunAdmin)
-admin.site.register(Plugin, PluginAdmin)
+admin.site.register(TaskPlugin, PluginAdmin)
+admin.site.register(NotificationPlugin, PluginAdmin)
 admin.site.register(RunSchedule, RunScheduleAdmin)

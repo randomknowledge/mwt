@@ -1,4 +1,5 @@
 from urllib2 import urlopen
+from django.utils import simplejson
 from ..tasks import BaseTaskPlugin
 
 
@@ -13,4 +14,4 @@ __params__ = ['url']
 class Main(BaseTaskPlugin):
     def process(self):
         url = urlopen(self.options.get('url'), None, 30)
-        self.successmessage = url.info()
+        self.result = simplejson.dumps({'success': True, 'headers': str(url.info())})

@@ -8,23 +8,23 @@ from ...utils.log import logger
 
 class BaseTaskPlugin(object):
     testrun = None
-    successmessage = ''
+    result = "{'success': false}"
     options = {}
 
     def run(self, run_obj, **kwargs):
         self.testrun = run_obj
-        self.options = run_obj.schedule.test.get_options_for_plugin_dsn(plugin_dsn=str(self.__module__))
+        self.options = run_obj.schedule.test.get_options_for_task_dsn(task_dsn=str(self.__module__))
 
         try:
             self._startrun()
             self.process()
         except Exception:
             logger.fatal("Test failed: %s" % get_stacktrace_string())
-            self.testrun.fail(get_stacktrace_string())
+            self.testrun.fail(simplejson.dumps({'success': False, 'stacktrace': get_stacktrace_string()}))
         else:
             self._endrun()
 
-        return self.testrun.message
+        return self.testrun.result
 
     def _startrun(self):
         self.testrun.start()
@@ -33,7 +33,7 @@ class BaseTaskPlugin(object):
         pass
 
     def _endrun(self):
-        self.testrun.success(self.successmessage)
+        self.testrun.success(self.result)
 
 
 class CasperJSTaskPlugin(BaseTaskPlugin):
