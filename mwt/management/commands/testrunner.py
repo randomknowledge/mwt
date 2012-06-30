@@ -43,6 +43,7 @@ class Command(BaseCommand):
             except KeyboardInterrupt:
                 logger.info("%s exiting..." % self._name)
         else:
+            #Testrun.objects.all().delete()
             logger.info('Starting %s in burst mode' % self._name)
             self.run()
 

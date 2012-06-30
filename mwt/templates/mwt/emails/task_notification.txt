@@ -1,14 +1,35 @@
-=== MWT on {{ site.name }}: New Notification from {{ website.client.name }} - {{ website.name }} ===
+{% load mwt_tags %}
+{% load url from future %}
+============================================================================================================
+{{ title|safe|fill:"108,=, ,center" }}
+============================================================================================================
 
+
+____________________________________________________________________________________________________________
+Summary:
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+{% if fail_only %}{{ runs|length }} plugin{% if runs|length > 1 %}s{% endif %} failed.{% else %}Ran {{ runs|length }} plugins.
+{{ successful }} without errors.
+{{ result_successful }} with success.
+{{ runs|length|subtract:successful }} with errors.
+{{ runs|length|subtract:result_successful }} without success.
+{% endif %}
 {% for run in runs %}
-Task: {{ run.task }}
-____________________________________________________________________________________________________
-State: {{ run.state }}
-Success: {% if run.result.success %}Yes{% else %}No{% endif %}
-Started: {{ run.date_started }}
-Ended: {{ run.date_finished }}
-Duration: {{ run.duration }}
-Message:
-{{ run.result.message }}
+____________________________________________________________________________________________________________
+│ Task:         {{ run.task|fill:"91, ,,right" }}│
+│¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯│
+│ State:        {{ run.state|fill:"91, ,,right" }}│
+│ Success:      {% if run.result.success %}{{ "Yes"|fill:"91, ,,right" }}{% else %}{{ "No"|fill:"91, ,,right" }}{% endif %}│
+│ Started:      {{ run.date_started|fill:"91, ,,right" }}│
+│ Ended:        {{ run.date_finished|fill:"91, ,,right" }}│
+│ Duration:     {{ run.duration|fill:"91, ,,right" }}│
+│                                                                                                          │
+│ Message:                                                                                                 │
+│                                                                                                          │
+{{ run.result.message|wordwrap:104|hardwrap_and_fillright:"102,104, │"|lineprepend:"│ "|safe }}
+│                                                                                                          │
+│ More Details: {% run_admin_url run.id 91 %}│
+│                                                                                                          │
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 {% endfor %}
