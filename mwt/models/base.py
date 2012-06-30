@@ -3,6 +3,8 @@ from django.conf import settings
 from django.db import models
 from .. import constants
 from django.utils import simplejson
+from django.utils.safestring import mark_safe
+import re
 from .plugins import TaskPluginOption, NotificationPluginOption
 from ..utils.time import get_tz
 
@@ -72,7 +74,7 @@ class Testrun(models.Model):
     date_finished = models.DateTimeField(blank=True, null=True)
     state = models.CharField(
         max_length=32, choices=constants.RUN_STATUS_CHOICES, default=constants.RUN_STATUS_PENDING)
-    result = models.TextField(null=True, blank=True)
+    result = models.TextField(null=True, blank=True, editable=False)
     task = models.ForeignKey('TaskPlugin', related_name='+')
     schedule = models.ForeignKey('RunSchedule', related_name='+')
 
@@ -105,6 +107,25 @@ class Testrun(models.Model):
         if self.state == constants.RUN_STATUS_PENDING or self.state == constants.RUN_STATUS_RUNNING:
             return datetime.datetime.now(tz=get_tz()) - self.date_started
         return self.date_finished - self.date_started
+
+    def result_object(self):
+        return simplejson.loads(self.result)
+
+    def run_success(self):
+        return self.result_object().get('success', False)
+
+    def _run_other_results(self):
+        r = ''
+        for key, value in self.result_object().iteritems():
+            if key != 'success' and key != 'message':
+              r += "%s: %s\n" % (key, value)
+        return r
+
+    def other_run_results(self):
+        return mark_safe("<pre>%s</pre>" % self._run_other_results().decode('string_escape'))
+
+    def run_message(self):
+        return mark_safe("<pre>%s</pre>" % self.result_object().get('message', ''))
 
     def stage_image(self, state):
         return '<img src="%smwt/admin/img/icon-%s.png" alt="%s" title="%s" style="margin-left: 10px" />'\
@@ -144,7 +165,7 @@ class RunSchedule(models.Model):
     repeat = models.CharField(max_length=32, choices=constants.RUN_REPEAT_CHOICES, default='no')
     test = models.ForeignKey(Test)
     paused = models.BooleanField(default=False)
-    run_id = models.IntegerField(default=0)
+    run_id = models.IntegerField(default=0, verbose_name=u'Run Counter')
 
     class Meta:
         app_label = 'mwt'

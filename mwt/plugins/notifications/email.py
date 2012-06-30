@@ -62,7 +62,7 @@ class Main(BaseNotificationPlugin):
 
         ctx = {
             'title': 'MWT Result',
-            'mwt': {'name': constants.MWT_NAME, 'url': constants.MWT_URL},
+            'mwt': {'name': constants.MWT_SETTINGS.get('name'), 'url': constants.MWT_SETTINGS.get('url')},
             'runs': runs,
             'website': self.run_objs[0].schedule.test.website,
             'successful': successful,

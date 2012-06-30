@@ -22,11 +22,13 @@ class WebsiteAdmin(admin.ModelAdmin):
     unique_together = (('name', 'url'),)
     list_display = ('name', 'url', 'description')
     list_display_links = ('name', 'url', 'description')
+    search_fields = ('name', 'url', 'description')
 
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
     list_display_links = ('name', 'description')
+    search_fields = ('name', 'description',)
 
 
 class TestrunAdmin(admin.ModelAdmin):
@@ -34,8 +36,10 @@ class TestrunAdmin(admin.ModelAdmin):
             'date_finished', 'duration', 'task', 'schedule')
     list_display_links = ('date_created', 'date_started',
                           'date_finished', 'duration', 'task', 'schedule')
-    list_filter = ('state', 'date_created', 'date_started', 'date_finished' )
-    search_fields = ('test__description', )
+    list_filter = ('state', 'date_created', 'date_started', 'date_finished', 'task')
+    search_fields = ('schedule__test__description', 'task__dsn', 'task__name', 'task__description',)
+    readonly_fields = ('state', 'task', 'schedule', 'date_created', 'date_started',
+                    'date_finished', 'duration', 'run_success', 'run_message', 'other_run_results')
 
     def has_add_permission(self, request):
         return False
@@ -46,6 +50,8 @@ class TestAdmin(admin.ModelAdmin):
     change_form_template = 'admin/test_change_form.html'
     list_display = ('description', 'task_list', 'notification_list', 'website')
     list_display_links = ('description', 'task_list', 'notification_list', 'website')
+    list_filter = ('website__name', 'notifications', 'tasks')
+    search_fields = ('description',)
 
     class Media:
         js = [ 'mwt/admin/js/test_admin.js', ]
@@ -56,15 +62,22 @@ class PluginAdmin(admin.ModelAdmin):
                     'description', 'versionfield', 'params')
     list_display_links = ('dsn', 'name', 'author',
                           'description', 'versionfield', 'params')
+    readonly_fields = ('dsn', 'name', 'author',
+                       'description', 'versionfield', 'params')
+    list_filter = ('author',)
+    search_fields = ('dsn', 'name', 'description', )
 
     def has_add_permission(self, request):
         return False
 
 
 class RunScheduleAdmin(admin.ModelAdmin):
-    list_display = ('test', 'repeat', 'datetime')
-    list_display_links = ('test', 'repeat', 'datetime')
+    list_display = ('test', 'repeat', 'datetime', 'run_id')
+    list_display_links = ('test', 'run_id')
     list_filter = ('repeat',)
+    readonly_fields = ('run_id',)
+    list_editable = ('repeat', 'datetime',)
+    search_fields = ('test__description', )
 
     def has_add_permission(self, request):
         return False

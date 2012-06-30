@@ -3,24 +3,34 @@ from django.conf import settings
 import re
 
 
+DEFAULTS = {
+    'mwt': {
+        'url': 'http://localhost:8000',
+        'name': 'localhost',
+        'email_from': 'MWT Server <noreply@localhost>',
+    },
+    'redis': {
+        'connection': {
+            'db': 0,
+            'host': 'localhost',
+            'port': 6379,
+            },
+        'eager': False,
+        'queue_prefix': 'mwt:'
+    },
+}
+
+
 RUN_STATUS_PENDING = 'pending'
 RUN_STATUS_RUNNING = 'running'
 RUN_STATUS_SUCCESS = 'success'
 RUN_STATUS_FAIL = 'fail'
 
 
-REDIS_SETTINGS = getattr(settings, 'REDIS_SETTINGS', {
-    'connection': {
-        'db': 0,
-        'host': 'localhost',
-        'port': 6379,
-    },
-    'eager': False,
-    'queue_prefix': 'mwt:'
-})
+REDIS_SETTINGS = getattr(settings, 'REDIS_SETTINGS', DEFAULTS.get('redis'))
+MWT_SETTINGS = getattr(settings, 'MWT_SETTINGS', DEFAULTS.get('mwt'))
+MWT_SETTINGS['url'] = re.sub(r'\/+$', '', MWT_SETTINGS.get('url', DEFAULTS.get('mwt').get('url')))
 
-MWT_URL = re.sub(r'\/+$', '', getattr(settings, 'MWT_URL', 'http://localhost:8000'))
-MWT_NAME = getattr(settings, 'MWT_NAME', 'localhost')
 
 RUN_STATES = {
     RUN_STATUS_PENDING: u'Pending',
@@ -77,3 +87,4 @@ RUN_SCHEDULES = {
 
 
 RUN_REPEAT_CHOICES = tuple([(key, value.get('description')) for key, value in RUN_SCHEDULES.iteritems()])
+

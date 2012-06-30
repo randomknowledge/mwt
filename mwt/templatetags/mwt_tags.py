@@ -10,7 +10,7 @@ register = template.Library()
 
 @register.simple_tag
 def run_admin_url(id, fill_length=0):
-    url = constants.MWT_URL + reverse('admin:mwt_testrun_change', args=[id])
+    url = constants.MWT_SETTINGS.get('url') + reverse('admin:mwt_testrun_change', args=[id])
     if fill_length == 0:
         return url
     return fill(url, "%s, ,,right" % fill_length)
