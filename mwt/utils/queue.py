@@ -17,7 +17,8 @@ def enqueue(function, *args, **kwargs):
         return function(*args, **kwargs)
 
     setup_rq_connection()
-    queue = kwargs.pop('queue', constants.REDIS_SETTINGS.get('queue', 'default'))
+    queue_prefix = constants.REDIS_SETTINGS.get('queue_prefix')
+    queue = queue_prefix + kwargs.pop('queue', 'tasks')
     timeout = kwargs.pop('timeout', 180)
     return Queue(queue).enqueue(function, *args, timeout=timeout, **kwargs)
 

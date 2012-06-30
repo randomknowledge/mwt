@@ -79,7 +79,7 @@ class Command(BaseCommand):
 
 
     def enqueue_task(self, task, run_obj):
-        enqueue(run_task, registered_tasks.get(task), run_obj)
+        enqueue(run_task, registered_tasks.get(task), run_obj, queue='tasks')
 
 
     def explain(self):
@@ -91,7 +91,7 @@ def run_task(task_obj, run_obj):
     set_run_finished(run_obj.schedule.run_id)
     if get_run_counter(run_obj.schedule.run_id) >= len(run_obj.schedule.test.tasks.all()):
         clear_run(run_obj.schedule.run_id)
-        enqueue(notify, run_obj.schedule)
+        enqueue(notify, run_obj.schedule, queue='notifications')
     return result
 
 

@@ -15,7 +15,7 @@ REDIS_SETTINGS = getattr(settings, 'REDIS_SETTINGS', {
         'port': 6379,
     },
     'eager': False,
-    'queue': 'mwt'
+    'queue_prefix': 'mwt:'
 })
 
 RUN_STATES = {
