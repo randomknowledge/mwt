@@ -1,0 +1,14 @@
+=== MWT on {{ site.name }}: New Notification from {{ website.client.name }} - {{ website.name }} ===
+
+{% for run in runs %}
+Task: {{ run.task }}
+____________________________________________________________________________________________________
+State: {{ run.state }}
+Success: {% if run.result.success %}Yes{% else %}No{% endif %}
+Started: {{ run.date_started }}
+Ended: {{ run.date_finished }}
+Duration: {{ run.duration }}
+Message:
+{{ run.result.message }}
+
+{% endfor %}

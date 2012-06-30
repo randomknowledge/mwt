@@ -6,7 +6,7 @@ setup(
     name="mwt",
     author="Florian Finke",
     author_email="flo@randomknowledge.org",
-    version='0.1.1',
+    version='0.1.2',
     packages=['mwt'],
     package_data=finddata.find_package_data(),
     url='https://git.randomknowledge.org/mwt',

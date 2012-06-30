@@ -8,7 +8,7 @@ from ...utils.log import logger
 
 class BaseTaskPlugin(object):
     testrun = None
-    result = "{'success': false}"
+    result = "{'success': false, 'message': ''}"
     options = {}
 
     def run(self, run_obj, **kwargs):
@@ -20,7 +20,7 @@ class BaseTaskPlugin(object):
             self.process()
         except Exception:
             logger.fatal("Test failed: %s" % get_stacktrace_string())
-            self.testrun.fail(simplejson.dumps({'success': False, 'stacktrace': get_stacktrace_string()}))
+            self.testrun.fail(simplejson.dumps({'success': False, 'message': get_stacktrace_string()}))
         else:
             self._endrun()
 

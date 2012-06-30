@@ -1,3 +1,4 @@
+from datetime import datetime
 from urllib2 import urlopen
 from django.utils import simplejson
 from ..tasks import BaseTaskPlugin
@@ -13,5 +14,12 @@ __params__ = ['url']
 
 class Main(BaseTaskPlugin):
     def process(self):
+        t = datetime.utcnow()
         url = urlopen(self.options.get('url'), None, 30)
-        self.result = simplejson.dumps({'success': True, 'headers': str(url.info())})
+        elapsed = datetime.utcnow() - t
+        self.result = simplejson.dumps({
+            'success': True,
+            'message': "Server reponded in %s" % elapsed,
+            'headers': "\n<headers>\n%s\n</headers>" % str(url.info()).strip()
+        })
+

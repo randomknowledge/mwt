@@ -48,4 +48,4 @@ def get_run_counter(schedule_run_id):
 
 def clear_run(schedule_run_id):
     setup_rq_connection()
-    get_current_connection().delete(schedule_run_id)
+    get_current_connection().delete("mwt:schedule:%d" % schedule_run_id)

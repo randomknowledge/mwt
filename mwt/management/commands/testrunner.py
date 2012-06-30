@@ -43,6 +43,7 @@ class Command(BaseCommand):
             except KeyboardInterrupt:
                 logger.info("%s exiting..." % self._name)
         else:
+            Testrun.objects.all().delete()
             logger.info('Starting %s in burst mode' % self._name)
             self.run()
 
@@ -98,4 +99,4 @@ def run_task(task_obj, run_obj):
 def notify(schedule):
     runs = Testrun.objects.filter(schedule=schedule)
     for notification in schedule.test.notifications.all():
-        registered_notifications.get(str(notification.dsn)).run(runs)
+        registered_notifications.get(str(notification.dsn)).run(runs, schedule)

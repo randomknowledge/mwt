@@ -3,7 +3,7 @@ from django.conf import settings
 from django.db import models
 from .. import constants
 from django.utils import simplejson
-from .plugins import TaskPluginOption, TaskPlugin
+from .plugins import TaskPluginOption, NotificationPluginOption
 from ..utils.time import get_tz
 
 

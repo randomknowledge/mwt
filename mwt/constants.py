@@ -1,5 +1,6 @@
 from datetime import timedelta
 from django.conf import settings
+import re
 
 
 RUN_STATUS_PENDING = 'pending'
@@ -17,6 +18,9 @@ REDIS_SETTINGS = getattr(settings, 'REDIS_SETTINGS', {
     'eager': False,
     'queue_prefix': 'mwt:'
 })
+
+MWT_URL = re.sub(r'\/+$', '', getattr(settings, 'MWT_URL', 'http://localhost:8000'))
+MWT_NAME = getattr(settings, 'MWT_NAME', 'localhost')
 
 RUN_STATES = {
     RUN_STATUS_PENDING: u'Pending',
