@@ -1,10 +1,10 @@
+import cgi
 import datetime
 from django.conf import settings
 from django.db import models
 from .. import constants
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
-import re
 from .plugins import TaskPluginOption, NotificationPluginOption
 from ..utils.time import get_tz
 
@@ -122,10 +122,10 @@ class Testrun(models.Model):
         return r
 
     def other_run_results(self):
-        return mark_safe("<pre>%s</pre>" % self._run_other_results().decode('string_escape'))
+        return mark_safe("<pre>%s</pre>" % cgi.escape(self._run_other_results().decode('string_escape')))
 
     def run_message(self):
-        return mark_safe("<pre>%s</pre>" % self.result_object().get('message', ''))
+        return mark_safe("<pre>%s</pre>" % cgi.escape(self.result_object().get('message', '')))
 
     def stage_image(self, state):
         return '<img src="%smwt/admin/img/icon-%s.png" alt="%s" title="%s" style="margin-left: 10px" />'\
