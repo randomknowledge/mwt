@@ -174,10 +174,12 @@ class RunSchedule(models.Model):
     class Meta:
         app_label = 'mwt'
 
-    def __unicode__(self):
+    @property
+    def description(self):
         if self.repeat == 'no':
-            add = "Run once on %s" % self.first_run_at
+            return "Run once on %s" % self.first_run_at
         else:
-            add = "Run every %s" % constants.RUN_SCHEDULES.get(self.repeat).get('description', self.repeat)
+            return "Run every %s" % constants.RUN_SCHEDULES.get(self.repeat).get('description', self.repeat)
 
-        return "%s: %s" % (self.test, add)
+    def __unicode__(self):
+        return "%s: %s" % (self.test, self.description)

@@ -1,0 +1,102 @@
+{% extends 'mwt/main/bootstrap.html' %}
+{% load i18n %}
+{% load url from future %}
+
+{% block content %}
+    <div class="accordion" id="clients-accordion">
+        {% for client in clients %}
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a href="#client-collapse-{{ client.pk }}" data-parent="#clients-accordion" data-toggle="collapse" class="accordion-toggle">
+                        {{ client.name }}
+                    </a>
+                </div>
+                <div class="accordion-body {% if forloop.counter0 != 0 %}collapse{% endif %}" id="client-collapse-{{ client.pk }}">
+                    <div class="accordion-inner">
+                        {% for website in client.website_set.all %}
+                            <div class="accordion" id="website-accordion-{{ website.pk }}">
+                                <div class="accordion-group">
+                                    <div class="accordion-heading">
+                                        <a href="#website-collapse-{{ website.pk }}" data-parent="#website-accordion-{{ website.pk }}" data-toggle="collapse" class="accordion-toggle">
+                                            {{ website.name }}
+                                        </a>
+                                    </div>
+                                    <div class="accordion-body {% if forloop.counter0 != 0 %}collapse{% endif %}" id="website-collapse-{{ website.pk }}">
+                                        <div class="accordion-inner">
+                                            {% if not website.test_set.all %}
+                                                <p>{% trans "No Tests" %}</p>
+                                            {% else %}
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>{% trans "Name" %}</th>
+                                                        <th>{% trans "Tasks" %}</th>
+                                                        <th>{% trans "Notifications" %}</th>
+                                                        <th>{% trans "Schedules" %}</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for test in website.test_set.all %}
+                                                        <tr>
+                                                            <td>
+                                                                <ul class="nav nav-pills">
+                                                                    <li class="dropdown" id="test-{{ test.pk }}-dropdown">
+                                                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#test-{{ test.pk }}-dropdown">
+                                                                            {{ test.description }}
+                                                                            <b class="caret"></b>
+                                                                        </a>
+                                                                        <ul class="dropdown-menu">
+                                                                            <li><a href="{% url 'admin:mwt_test_change' test.pk %}">{% trans "Edit" %}</a></li>
+                                                                            <li class="divider"></li>
+                                                                            <li><a href="{% url 'admin:mwt_test_delete' test.pk %}">{% trans "Delete" %}</a></li>
+                                                                        </ul>
+                                                                    </li>
+                                                                </ul>
+                                                            </td>
+                                                            <td>
+                                                                {% for task in test.tasks.all %}
+                                                                    <span data-content="{{ task.description }}"
+                                                                          data-placement="bottom"
+                                                                          data-rel="popover"
+                                                                          class="label"
+                                                                          data-original-title="{{ task.name }}">{{ task.name }}
+                                                                    </span>
+                                                                {% endfor %}
+                                                            </td>
+                                                            <td>
+                                                                {% for nofi in test.notifications.all %}
+                                                                    <span data-content="{{ nofi.description }}"
+                                                                          data-placement="bottom"
+                                                                          data-rel="popover"
+                                                                          class="label"
+                                                                          data-original-title="{{ nofi.name }}">{{ nofi.name }}
+                                                                    </span>
+                                                                {% endfor %}
+                                                            </td>
+                                                            <td>
+                                                                {% for sched in test.runschedule_set.all %}
+                                                                    <span data-content="<div>{% trans "First run:" %} <span class='label label-info'>{{ sched.first_run_at }}</span></div><div>{% trans "Last run:" %} <span class='label label-info'>{{ sched.last_run }}</span></div><div>{% trans "Repeat:" %} {{ sched.description }}</div><div>{% trans "Runs until now:" %} <span class='badge badge-info'>{{ sched.run_id }}</span></div>"
+                                                                          data-placement="bottom"
+                                                                          data-rel="popover"
+                                                                          class="label"
+                                                                          data-original-title="{{ sched.description }}">{{ sched.description }}
+                                                                    </span>
+                                                                {% endfor %}
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

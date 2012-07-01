@@ -1,0 +1,93 @@
+{% load static %}
+{% load i18n %}
+{% load url from future %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ title|default:"Multipurpose Website Testing" }}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    {% block css %}
+    <link href="{% static "mwt/main/css/bootstrap.css" %}" rel="stylesheet">
+    <link href="{% static "mwt/main/css/main.css" %}" rel="stylesheet">
+    <link href="{% static "mwt/main/css/bootstrap-responsive.css" %}" rel="stylesheet">
+    {% endblock %}
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    {% block ico %}
+    <link rel="shortcut icon" href="{% static "mwt/main/ico/favicon.ico" %}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{% static "mwt/main/ico/apple-touch-icon-144-precomposed.png" %}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static "mwt/main/ico/apple-touch-icon-114-precomposed.png" %}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static "mwt/main/ico/apple-touch-icon-72-precomposed.png" %}">
+    <link rel="apple-touch-icon-precomposed" href="{% static "mwt/main/ico/apple-touch-icon-57-precomposed.png" %}">
+    {% endblock %}
+</head>
+
+<body>
+{% block body %}
+{% block navbar %}
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <a class="brand" href="{% url 'mwt_dashboard' %}">{{ title|default:"Multipurpose Website Testing" }}</a>
+                <div class="btn-group pull-right">
+                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="icon-user"></i> {{ user.first_name|default:user.username }} {{ user.last_name }}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">{% trans "My Account" %}</a></li>
+                        <li class="divider"></li>
+                        <li><a href="{% url 'admin:logout' %}">{% trans "Logout" %}</a></li>
+                    </ul>
+                </div>
+                <div class="nav-collapse">
+                    <ul class="nav">
+                        <li{% if view_name == 'dashboard' %} class="active"{% endif %}><a href="{% url 'mwt_dashboard' %}">{% trans "Dashboard" %}</a></li>
+                        <li{% if view_name == 'tests' %} class="active"{% endif %}><a href="{% url 'mwt_tests' %}">{% trans "My Tests" %}</a></li>
+                        <li{% if view_name == 'testruns' %} class="active"{% endif %}><a href="{% url 'mwt_testruns' %}">{% trans "My Testruns" %}</a></li>
+                    </ul>
+                </div>
+                <div class="nav-collapse">
+                    <ul class="nav pull-right">
+                        <li{% if view_name == 'admin' %} class="active"{% endif %}><a href="{% url 'mwt_dashboard' %}">{% trans "Administration" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+<div class="container-fluid">
+{% block content %}
+    n/t
+{% endblock %}
+</div>
+{% block js %}
+<script src="{% static "mwt/main/js/lib/jquery.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-transition.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-alert.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-modal.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-dropdown.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-scrollspy.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-tab.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-tooltip.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-popover.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-button.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-collapse.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-carousel.js" %}"></script>
+<script src="{% static "mwt/main/js/lib/bootstrap-typeahead.js" %}"></script>
+<script src="{% static "mwt/main/js/main.js" %}"></script>
+{% endblock %}
+{% endblock %}
+</body>
+</html>
