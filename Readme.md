@@ -5,7 +5,7 @@
 ____
 
 **`MWT` or multipurpose website testing is a [Django](https://www.djangoproject.com/) app
-for managing website tests (like "is site up).
+for managing website tests (like "is site up?").
 New tests are can be added as plugins.**
 
 
@@ -62,7 +62,7 @@ MWT_SETTINGS = {
 
 `MWT` uses two (rq-)queues: `mwt:tasks` and `mwt:notifications`
 (Note: if you set the `queue_prefix` different from `mwt:` in
-your `settings.py`, the queue names change accordingly.
+your `settings.py`, the queue names change accordingly.)
 
 Inside your [virtualenv](http://pypi.python.org/pypi/virtualenv/) let your
 rq-workers listen to the mwt-queues. It makes sense to at least start two
@@ -99,7 +99,7 @@ Use this for testing or in cron-jobs.
 
 In `deamon-mode` the taskrunner will run until killed.
 (Note that the taskrunner doesn't deamonize itself.
-Use [supervisor](http://supervisord.org/) or similar for this)
+Use [supervisor](http://supervisord.org/) or similar for this.)
 
 ```console
 (virtualenv)$ python manage.py taskrunner deamon
@@ -111,7 +111,7 @@ Use [supervisor](http://supervisord.org/) or similar for this)
 Log in to you django admin and start by adding `tests`.
 Each `test` can run several `plugins`, `notifications` and `run schedules`.
 When a test is started (by the `taskrunner` it will first run all it's `plugins`
-and after that run it's `notifications`
+and after that run it's `notifications`.
 
 
 ## TODO
