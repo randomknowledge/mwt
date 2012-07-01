@@ -7,6 +7,7 @@ from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from .plugins import TaskPluginOption, NotificationPluginOption
 from ..utils.time import get_tz
+from ..managers import RunScheduleManager
 
 
 class Client(models.Model):
@@ -161,18 +162,21 @@ class Testrun(models.Model):
 
 
 class RunSchedule(models.Model):
-    datetime = models.DateTimeField()
+    first_run_at = models.DateTimeField()
     repeat = models.CharField(max_length=32, choices=constants.RUN_REPEAT_CHOICES, default='no')
     test = models.ForeignKey(Test)
     paused = models.BooleanField(default=False)
     run_id = models.IntegerField(default=0, verbose_name=u'Run Counter')
+    last_run = models.DateTimeField(editable=False, null=True, blank=True)
+
+    objects = RunScheduleManager()
 
     class Meta:
         app_label = 'mwt'
 
     def __unicode__(self):
         if self.repeat == 'no':
-            add = "Run once on %s" % self.datetime
+            add = "Run once on %s" % self.first_run_at
         else:
             add = "Run every %s" % constants.RUN_SCHEDULES.get(self.repeat).get('description', self.repeat)
 

@@ -72,11 +72,11 @@ class PluginAdmin(admin.ModelAdmin):
 
 
 class RunScheduleAdmin(admin.ModelAdmin):
-    list_display = ('test', 'repeat', 'datetime', 'run_id')
+    list_display = ('test', 'repeat', 'first_run_at', 'run_id')
     list_display_links = ('test', 'run_id')
     list_filter = ('repeat',)
     readonly_fields = ('run_id',)
-    list_editable = ('repeat', 'datetime',)
+    list_editable = ('repeat', 'first_run_at',)
     search_fields = ('test__description', )
 
     def has_add_permission(self, request):

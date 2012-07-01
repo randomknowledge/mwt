@@ -11,3 +11,7 @@ def get_tz(tzstring=None):
 
 def get_tznow(tzstring=None):
     return datetime.now(tz=get_tz(tzstring=tzstring))
+
+
+def get_utcnow():
+    return datetime.utcnow()

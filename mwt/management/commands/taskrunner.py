@@ -1,25 +1,26 @@
+from datetime import datetime
 from time import sleep
 from django.core.management.base import BaseCommand
-from ... import registered_tasks, registered_notifications, constants
+from ... import registered_tasks, registered_notifications
 import re
 from ...models.base import Testrun, RunSchedule
 from ...utils.log import logger
-from ...utils.time import get_tznow
 from ...utils.queue import enqueue, set_run_finished, get_run_counter, clear_run
 
 
 class Command(BaseCommand):
-    _name = 'MWT :: Main Task runner.'
+    _name = 'MWT :: Main Task runner'
     _usage = """Usage:
-    python manage.py testrunner burst
+    python manage.py taskrunner burst
             Run %s in burst mode (run once, e.g. as a cron job)
-    python manage.py testrunner deamon [sleeptime]
+    python manage.py taskrunner deamon [sleeptime]
             Run %s in deamon mode. Will wait <sleeptime> seconds (default 5) between runs.
     """ % (_name, _name)
     help = "%s\n%s" % (_name, _usage)
 
 
     def handle(self, *args, **options):
+
         if not len(args):
             return self.explain()
 
@@ -43,38 +44,32 @@ class Command(BaseCommand):
             except KeyboardInterrupt:
                 logger.info("%s exiting..." % self._name)
         else:
-            #Testrun.objects.all().delete()
             logger.info('Starting %s in burst mode' % self._name)
             self.run()
 
 
 
     def run(self):
-        logger.info('Checking Schedules...')
+        logger.debug('Checking Schedules...')
         try:
-            for schedule in RunSchedule.objects.filter(paused=False):
+            found = False
+            for schedule in RunSchedule.objects.pending():
+                found = True
+                logger.info("Running Test '%s'" % schedule.test)
                 try:
-                    runs = Testrun.objects.filter(schedule=schedule)
-                    if schedule.repeat != 'no':
-                        runs = runs.filter(date_created__gt=get_tznow() - constants.RUN_SCHEDULES.get(schedule.repeat).get('delta'))
+                    schedule.run_id = schedule.run_id + 1
+                    schedule.last_run = datetime.now()
+                    schedule.save()
+                    for task in schedule.test.tasks.all():
+                        run_obj = Testrun(schedule=schedule, task=task)
+                        run_obj.save()
+                        logger.info("Executing Task %s" % task)
 
-                    if runs:
-                        logger.info("No pending runs for Schedule '%s'" % schedule)
-                    else:
-                        logger.info("Running Test '%s'" % schedule.test)
-                        try:
-                            schedule.run_id = schedule.run_id + 1
-                            schedule.save()
-                            for task in schedule.test.tasks.all():
-                                run_obj = Testrun(schedule=schedule, task=task)
-                                run_obj.save()
-                                logger.info("Executing Task %s" % task)
-
-                                self.enqueue_task(str(task.dsn), run_obj)
-                        except Exception, e:
-                            logger.fatal("Unable to get Task for Test '%s': %s" % (schedule.test, e))
-                except Exception:
-                    logger.fatal("Unable to get Runs for Schedule '%s'" % schedule)
+                        self.enqueue_task(str(task.dsn), run_obj)
+                except Exception, e:
+                    logger.fatal("Unable to get Task for Test '%s': %s" % (schedule.test, e))
+            if not found:
+                logger.debug('No pending schedules')
         except Exception:
             logger.fatal("Unable to get Schedules")
 
