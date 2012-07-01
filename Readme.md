@@ -4,7 +4,7 @@
 
 ____
 
-**`mwt` or multipurpose website testing is a `django` app
+**`MWT` or multipurpose website testing is a [Django](https://www.djangoproject.com/) app
 for managing website tests (like "is site up).
 New tests are can be added as plugins.**
 
@@ -17,6 +17,7 @@ New tests are can be added as plugins.**
 * [html5lib](http://code.google.com/p/html5lib/)
 * [lxml](https://github.com/lxml/lxml)
 * [RQ](https://github.com/nvie/rq/)
+
 #### For plugins
 * [PhantomJS](http://phantomjs.org/) and [CasperJS](http://casperjs.org/) (For google search index plugin)
 
