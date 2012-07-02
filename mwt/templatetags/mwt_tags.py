@@ -2,8 +2,7 @@ import re
 import math
 from django import template
 from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext, ungettext
-import datetime
+from django.utils.translation import ungettext
 from .. import constants
 
 

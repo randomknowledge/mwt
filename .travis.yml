@@ -11,4 +11,4 @@ install:
   - pip install -r requirements.txt
   - pip install -q -e . --use-mirrors
 script:
-  -  python setup.py test
+  -  sh runtests.sh

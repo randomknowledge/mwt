@@ -48,7 +48,7 @@ class DashboardView(TemplateView):
         c = Client.objects.all()
         if 'ajax' in self.request.GET:
             c = [itm.__dict__ for itm in c]
-        return {'clients': c,}
+        return {'clients': c}
 
     def get_testruns_ctx(self):
         columns = (
@@ -73,8 +73,8 @@ class DashboardView(TemplateView):
             items = []
             for itm in i.object_list:
                 item = itm.__dict__
-                item.update({'html': render_to_string("mwt/main/snippets/%s" % item_template, {'item':itm})})
-                items.append( item )
+                item.update({'html': render_to_string("mwt/main/snippets/%s" % item_template, {'item': itm})})
+                items.append(item)
 
             i = items
 
