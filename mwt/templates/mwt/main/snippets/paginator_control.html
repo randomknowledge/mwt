@@ -1,0 +1,73 @@
+{% load helpers %}
+
+{% with num_pages=items.paginator.num_pages current_page=items.number ellipsis='<li class="active"><a href="#">...</a></li>' %}
+
+    {% if num_pages > 1 %}
+        <div class="paginator_control pagination" xmlns="http://www.w3.org/1999/html">
+
+            {% comment %}
+            1. If max_page <= 9:
+                - No dots
+            2. If max_page > 9 and page <= 5:
+                - Right dots
+            3. If max_page > 9 and page > 5 and (max_page - page > 5):
+                - Right and left dots
+            4. Else
+                - Left dots
+        {% endcomment %}
+
+            {% if num_pages <= 9 %}
+                {% for page in items.paginator.page_range %}
+                    {% if page == current_page %}
+                        <li class="active"><a href="#">{{ page }}</a></li>
+                    {% else %}
+                        <li><a href="{{ baseurl.pa }}{{ prefix }}_pa={{ page }}">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% if current_page <= 5 %}
+                    {% for page in items.paginator.page_range|slice:":7" %}
+                        {% if page == current_page %}
+                            <li class="active"><a href="#">{{ page }}</a></li>
+                        {% else %}
+                            <li><a href="{{ baseurl.pa }}{{ prefix }}_pa={{ page }}">{{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {{ ellipsis }}
+                    <li><a href="{{ baseurl.pa }}{{ prefix }}_pa={{ num_pages }}">{{ num_pages }}</a></li>
+                {% else %}
+                    {% if num_pages|subtract:current_page <= 5 %}
+                        <li><a href="{{ baseurl.pa }}{{ prefix }}_pa=1">1</a></li>
+                        {{ ellipsis }}
+                        {% for page in items.paginator.page_range|slice:"-7:" %}
+                            {% if page == current_page %}
+                                <li class="active"><a href="#">{{ page }}</a></li>
+                            {% else %}
+                                <li><a href="{{ baseurl.pa }}{{ prefix }}_pa={{ page }}">{{ page }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <li><a href="{{ baseurl.pa }}{{ prefix }}_pa=1">1</a></li>
+                        {{ ellipsis }}
+                        {% with leftslice=current_page|subtract:3 %}
+                            {% for page in items.paginator.page_range|dynamic_slice_left:leftslice|slice:":5" %}
+                                {% if page == current_page %}
+                                    <li class="active"><a href="#">{{ page }}</a></li>
+                                {% else %}
+                                    <li><a href="{{ baseurl.pa }}{{ prefix }}_pa={{ page }}">{{ page }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        {% endwith %}
+                        {{ ellipsis }}
+                        <li><a href="{{ baseurl.pa }}{{ prefix }}_pa={{ num_pages }}">{{ num_pages }}</a></li>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if items.paginator.count == 0 %}
+        <p>No items found.</p>
+    {% endif %}
+
+{% endwith %}

@@ -1,3 +1,4 @@
+import datetime
 from django.http import HttpResponse, HttpResponseServerError
 from django.conf import settings
 from django.utils import simplejson
@@ -7,8 +8,10 @@ from django.template.loader import get_template, render_to_string
 
 class JsonResponse(HttpResponse):
     def __init__(self, data):
+
+        dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
         HttpResponse.__init__(self,
-            content=simplejson.dumps(data),
+            content=simplejson.dumps(data, default=dthandler),
             mimetype='application/json',
         )
 

@@ -1,1 +1,26 @@
 {% extends 'mwt/main/bootstrap.html' %}
+{% load i18n %}
+{% load mwt_tags %}
+
+{% block pre_js_inner %}
+    {{ block.super }}
+    num_pages = '{{ num_pages }}';
+{% endblock %}
+
+{% block content %}
+{% if items %}
+    <div class="simple_paginator">
+        <table class="table table-bordered">
+            <thead>
+            {% include 'simple_paginator/paginator_header.html' %}
+            </thead>
+            <tbody id="runs">
+                {% for item in items.object_list %}
+                    {% include "mwt/main/snippets/run-item.html" %}
+            {% endfor %}
+            </tbody>
+        </table>
+        {% include 'mwt/main/snippets/paginator_control.html' %}
+    </div>
+{% endif %}
+{% endblock %}

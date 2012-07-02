@@ -26,6 +26,14 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static "mwt/main/ico/apple-touch-icon-72-precomposed.png" %}">
     <link rel="apple-touch-icon-precomposed" href="{% static "mwt/main/ico/apple-touch-icon-57-precomposed.png" %}">
     {% endblock %}
+
+    {% block pre_js %}
+    <script type="text/javascript" language="javascript">
+        {% block pre_js_inner %}
+        view_name = '{{ view_name }}';
+        {% endblock %}
+    </script>
+    {% endblock %}
 </head>
 
 <body>

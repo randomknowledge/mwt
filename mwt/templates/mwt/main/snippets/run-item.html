@@ -1,0 +1,12 @@
+{% load i18n %}
+{% load mwt_tags %}
+<tr id="run-{{ item.pk }}">
+    <td><span class="label label-{{ item.state|state_to_bootstrap }}">{{ item.state|ucfirst }}</span></td>
+    <td><span class="label label-{{ item.result_successful|state_to_bootstrap }}">{% if item.result_successful %}{% trans "okay" %}{% else %}{% trans "not okay" %}{% endif %}</span></td>
+    <td>{{ item.date_created }}</td>
+    <td>{{ item.date_started }}</td>
+    <td>{{ item.date_finished }}</td>
+    <td>{{ item.duration|format_timedelta }}</td>
+    <td><span class="label">{{ item.task.name }}</span></td>
+    <td><span class="label">{{ item.schedule.description }}</span></td>
+</tr>

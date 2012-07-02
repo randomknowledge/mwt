@@ -17,8 +17,12 @@ setup(
                 ' New tests are can be added as plugins.',
     long_description=open('Readme.md').read(),
     zip_safe=False,
-    install_requires=['Django==1.4', 'South==0.7.5', 'pytz', 'html5lib==0.95', 'lxml==2.3.4', 'rq'],
-    dependency_links=['https://github.com/nvie/rq/tarball/master#egg=rq'],
+    install_requires=['Django==1.4', 'South==0.7.5', 'pytz', 'html5lib==0.95',
+                      'lxml==2.3.4', 'rq', 'simple_paginator',],
+    dependency_links=[
+        'https://github.com/nvie/rq/tarball/master#egg=rq',
+        'https://github.com/FactorAG/django-simplepaginator.git#egg=simple_paginator',
+    ],
     classifiers=[
         #'Development Status :: 1 - Planning',
         'Development Status :: 2 - Pre-Alpha',

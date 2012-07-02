@@ -76,6 +76,7 @@ class Testrun(models.Model):
     state = models.CharField(
         max_length=32, choices=constants.RUN_STATUS_CHOICES, default=constants.RUN_STATUS_PENDING)
     result = models.TextField(null=True, blank=True, editable=False)
+    result_successful = models.BooleanField(default=False)
     task = models.ForeignKey('TaskPlugin', related_name='+')
     schedule = models.ForeignKey('RunSchedule', related_name='+')
 
@@ -143,19 +144,22 @@ class Testrun(models.Model):
     admin_state.short_description = 'State'
 
     def admin_result(self):
+        if self.result_successful:
+            return self.stage_image(constants.RUN_STATUS_SUCCESS)
+        else:
+            return self.stage_image(constants.RUN_STATUS_FAIL)
+    admin_result.allow_tags = True
+    admin_result.short_description = 'Result'
+
+    def save(self, *args, **kwargs):
         success = False
         try:
             result = simplejson.loads(self.result)
             success = result.get('success', False)
         except Exception:
             pass
-
-        if success:
-            return self.stage_image(constants.RUN_STATUS_SUCCESS)
-        else:
-            return self.stage_image(constants.RUN_STATUS_FAIL)
-    admin_result.allow_tags = True
-    admin_result.short_description = 'Result'
+        self.result_successful = success
+        super(Testrun, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return "%s: %s" % (str(self.schedule), str(self.task))

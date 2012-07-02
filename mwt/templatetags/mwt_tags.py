@@ -2,10 +2,42 @@ import re
 import math
 from django import template
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext, ungettext
+import datetime
 from .. import constants
 
 
 register = template.Library()
+
+
+@register.filter
+def format_timedelta(delta):
+    num_years = delta.days / 365
+    if num_years > 0:
+        return ungettext(u"%d year", u"%d years", num_years) % num_years
+
+    num_weeks = delta.days / 7
+    if num_weeks > 0:
+        return ungettext(u"%d week", u"%d weeks", num_weeks) % num_weeks
+
+    if delta.days > 0:
+        return ungettext(u"%d day", u"%d days", delta.days) % delta.days
+
+    num_hours = delta.seconds / 3600
+    num_minutes = delta.seconds / 60
+
+    if num_hours > 0:
+        minutes = num_minutes - num_hours * 60
+        str_minutes = ungettext(u"%d minute", u"%d minutes", minutes) % minutes
+        return ungettext(u"%d hour %s", u"%d hours %s", (num_hours, str_minutes)) % (num_hours, str_minutes)
+
+    if num_minutes > 0:
+        s_seconds = delta.seconds - num_minutes * 60
+        str_seconds = ungettext(u"%d second", u"%d seconds", s_seconds) % s_seconds
+        return ungettext(u"%d minute %s", u"%d minutes %s", (num_minutes, str_seconds)) % (num_minutes, str_seconds)
+
+    seconds = delta.seconds + delta.microseconds / 1000000.0
+    return ungettext(u"%2.2f seconds", u"%2.2f seconds", seconds) % seconds
 
 
 @register.simple_tag
@@ -14,6 +46,23 @@ def run_admin_url(id, fill_length=0):
     if fill_length == 0:
         return url
     return fill(url, "%s, ,,right" % fill_length)
+
+
+@register.filter
+def ucfirst(text):
+    return text[0].upper() + text[1:]
+
+
+@register.filter
+def state_to_bootstrap(state):
+    return {
+        constants.RUN_STATUS_FAIL: 'important',
+        constants.RUN_STATUS_PENDING: 'info',
+        constants.RUN_STATUS_RUNNING: 'warning',
+        constants.RUN_STATUS_SUCCESS: 'success',
+        'false': 'important',
+        'true': 'success',
+    }.get(str(state).lower())
 
 
 @register.filter
