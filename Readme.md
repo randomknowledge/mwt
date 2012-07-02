@@ -8,6 +8,7 @@ ____
 for managing website tests (like "is site up?").
 New tests are can be added as plugins.**
 
+____
 [![Build Status](https://secure.travis-ci.org/randomknowledge/mwt.png?branch=master)](http://travis-ci.org/randomknowledge/mwt)
 
 ## Requirements
