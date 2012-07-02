@@ -1,6 +1,7 @@
 from django.db import models
 from .abstract import Plugin, PluginOption
 
+
 class TaskPlugin(Plugin):
     pass
 

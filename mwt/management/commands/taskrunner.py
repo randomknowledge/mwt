@@ -18,7 +18,6 @@ class Command(BaseCommand):
     """ % (_name, _name)
     help = "%s\n%s" % (_name, _usage)
 
-
     def handle(self, *args, **options):
 
         if not len(args):
@@ -47,8 +46,6 @@ class Command(BaseCommand):
             logger.info('Starting %s in burst mode' % self._name)
             self.run()
 
-
-
     def run(self):
         logger.debug('Checking Schedules...')
         try:
@@ -73,10 +70,8 @@ class Command(BaseCommand):
         except Exception:
             logger.fatal("Unable to get Schedules")
 
-
     def enqueue_task(self, task, run_obj):
         enqueue(run_task, registered_tasks.get(task), run_obj, queue='tasks')
-
 
     def explain(self):
         print self._usage

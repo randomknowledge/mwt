@@ -119,7 +119,7 @@ class Testrun(models.Model):
         r = ''
         for key, value in self.result_object().iteritems():
             if key != 'success' and key != 'message':
-              r += "%s: %s\n" % (key, value)
+                r += "%s: %s\n" % (key, value)
         return r
 
     def other_run_results(self):
@@ -130,12 +130,12 @@ class Testrun(models.Model):
 
     def stage_image(self, state):
         return '<img src="%smwt/admin/img/icon-%s.png" alt="%s" title="%s" style="margin-left: 10px" />'\
-        % (
-            getattr(settings, 'STATIC_URL', '/static/'),
-            state,
-            constants.RUN_STATES.get(state),
-            constants.RUN_STATES.get(state)
-            )
+            % (
+                getattr(settings, 'STATIC_URL', '/static/'),
+                state,
+                constants.RUN_STATES.get(state),
+                constants.RUN_STATES.get(state)
+                )
 
     def admin_state(self):
         return self.stage_image(self.state)

@@ -4,13 +4,15 @@ from rq.queue import Queue
 from .log import logger
 from .. import constants
 
+
 def setup_rq_connection():
     redis_conn = get_current_connection()
-    if redis_conn == None:
+    if redis_conn is None:
         opts = constants.REDIS_SETTINGS.get('connection')
         logger.debug('Establishing Redis connection to DB %(db)s at %(host)s:%(port)s' % opts)
         redis_conn = Redis(**opts)
         push_connection(redis_conn)
+
 
 def enqueue(function, *args, **kwargs):
     if constants.REDIS_SETTINGS.get('eager', False):
@@ -45,6 +47,7 @@ def get_run_counter(schedule_run_id):
     except Exception:
         pass
     return v
+
 
 def clear_run(schedule_run_id):
     setup_rq_connection()

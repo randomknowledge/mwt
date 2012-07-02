@@ -22,4 +22,3 @@ def plugin_params():
             params = ''
         data = data + "plugin_params['notifications'][%d] = [%s];\n" % (id, params)
     return data
-

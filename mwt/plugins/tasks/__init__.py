@@ -41,7 +41,7 @@ class CasperJSTaskPlugin(BaseTaskPlugin):
     def __init__(self):
         self.PHANTOM_JS_BIN = settings.PHANTOM_JS_BIN or 'phantomjs'
         self.CASPER_JS_BIN = settings.CASPER_JS_BIN or 'casperjs'
-        os.environ['PHANTOMJS_EXECUTABLE']  = self.PHANTOM_JS_BIN
+        os.environ['PHANTOMJS_EXECUTABLE'] = self.PHANTOM_JS_BIN
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.cmd = ('%s %s/js/%s.js' % (self.CASPER_JS_BIN, self.current_dir, self.__class__.__module__.split('.').pop())).split()
         self.javascript_result = {}
