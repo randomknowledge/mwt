@@ -29,8 +29,10 @@ def import_plugins(type):
                     logger.error("Failed to import Plugin %s: %s" %
                             (mod, get_stacktrace_string()))
                 else:
-                    if (type == 'tasks' and hasattr(i, 'Main') and issubclass(i.Main, BaseTaskPlugin))\
-                    or (type == 'notifications' and hasattr(i, 'Main') and issubclass(i.Main, BaseNotificationPlugin)):
+                    if (type == 'tasks' and hasattr(i, 'Main') and issubclass(i.Main, BaseTaskPlugin)) \
+                        or (type == 'notifications'
+                            and hasattr(i, 'Main')
+                            and issubclass(i.Main, BaseNotificationPlugin)):
                         imported.append(i)
                     else:
                         logger.error("Plugin '%s' doesn't extend "

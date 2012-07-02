@@ -1,7 +1,7 @@
 from django.utils.decorators import classonlymethod
 from django.views.generic.base import TemplateView
 from . import constants
-from .models.base import Test, Website, Client
+from .models.base import Client
 
 
 class DashboardView(TemplateView):

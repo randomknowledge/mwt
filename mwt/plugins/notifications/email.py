@@ -11,6 +11,7 @@ __pluginname__ = 'MWT E-Mail Notification Plugin'
 __description__ = """n/t"""
 __params__ = ['to', 'fail_only']
 
+
 class Main(BaseNotificationPlugin):
 
     def process(self):

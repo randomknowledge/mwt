@@ -63,9 +63,9 @@ def fill(value, args):
     if type == 'center':
         left = int(math.ceil((num - len(value)) / 2))
         right = int(math.floor((num - len(value)) / 2))
-        for i in range(0,left):
+        for i in range(0, left):
             value = char + value
-        for i in range(0,right):
+        for i in range(0, right):
             value += char
     else:
         while len(value) < num:
@@ -95,4 +95,4 @@ def interject_string(text, line_length, char=' '):
     while i < l:
         t = t + text[i:i + line_length] + char
         i = i + line_length
-    return re.sub(r'\n$','',t)
+    return re.sub(r'\n$', '', t)

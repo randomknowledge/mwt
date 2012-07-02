@@ -1,3 +1,7 @@
-from .abstract import *
-from .base import *
-from .plugins import *
+import abstract
+import base
+import plugins
+
+
+# pyflakes workaround
+abstract, base, plugins

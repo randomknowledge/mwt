@@ -54,7 +54,7 @@ class TestAdmin(admin.ModelAdmin):
     search_fields = ('description',)
 
     class Media:
-        js = [ 'mwt/admin/js/test_admin.js', ]
+        js = ['mwt/admin/js/test_admin.js', ]
 
 
 class PluginAdmin(admin.ModelAdmin):
@@ -81,7 +81,6 @@ class RunScheduleAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
-
 
 
 admin.site.register(Client, ClientAdmin)

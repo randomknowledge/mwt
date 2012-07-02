@@ -87,4 +87,3 @@ RUN_SCHEDULES = {
 
 
 RUN_REPEAT_CHOICES = tuple([(key, value.get('description')) for key, value in RUN_SCHEDULES.iteritems()])
-

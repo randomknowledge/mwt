@@ -50,7 +50,7 @@ class Main(BaseTaskPlugin):
             elapsed = datetime.utcnow() - t
             success = True
             message = "Server %s reponded in %s" % (server, elapsed),
-            if info.get('location',''):
+            if info.get('location', ''):
                 success = False
                 message = "Request on %s got header location: %s" % (server, info.get('location'))
 
@@ -60,4 +60,3 @@ class Main(BaseTaskPlugin):
             'headers': headers,
             'exception': exception,
             })
-
