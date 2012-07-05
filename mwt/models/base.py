@@ -1,18 +1,56 @@
 import cgi
 import datetime
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 from .. import constants
+from django.db.models.signals import post_save
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from .plugins import TaskPluginOption, NotificationPluginOption
 from ..utils.time import get_tz
-from ..managers import RunScheduleManager
+from ..managers import RunScheduleManager, BelongstoManager, TestrunManager
+
+
+class MWTGroup(models.Model):
+    name = models.CharField(max_length=96, null=False, blank=False, unique=True)
+    description = models.TextField(blank=True)
+    users = models.ManyToManyField(User, null=True, blank=True)
+
+    class Meta:
+        app_label = 'mwt'
+        verbose_name = 'Group'
+        verbose_name_plural = 'Groups'
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+
+class UserProfile(models.Model):
+    user = models.ForeignKey(User, unique=True, related_name='profile')
+
+    class Meta:
+        app_label = 'mwt'
+
+    def __unicode__(self):
+        return unicode(self.user)
+
+
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.get_or_create(user=instance)
+
+
+post_save.connect(create_user_profile, sender=User)
 
 
 class Client(models.Model):
     name = models.CharField(max_length=96, null=False, blank=False, unique=True)
     description = models.TextField(blank=True)
+    users = models.ManyToManyField(User, null=True, blank=True)
+    groups = models.ManyToManyField(MWTGroup, null=True, blank=True)
+
+    objects = BelongstoManager()
 
     class Meta:
         app_label = 'mwt'
@@ -26,6 +64,10 @@ class Website(models.Model):
     url = models.URLField(unique=True, null=False, blank=False)
     description = models.TextField(blank=True)
     client = models.ForeignKey(Client)
+    users = models.ManyToManyField(User, null=True, blank=True)
+    groups = models.ManyToManyField(MWTGroup, null=True, blank=True)
+
+    objects = BelongstoManager()
 
     class Meta:
         app_label = 'mwt'
@@ -79,6 +121,8 @@ class Testrun(models.Model):
     result_successful = models.BooleanField(default=False)
     task = models.ForeignKey('TaskPlugin', related_name='+')
     schedule = models.ForeignKey('RunSchedule', related_name='+')
+
+    objects = TestrunManager()
 
     class Meta:
         app_label = 'mwt'

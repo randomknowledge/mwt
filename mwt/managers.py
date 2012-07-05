@@ -23,3 +23,13 @@ class RunScheduleManager(models.Manager):
 
             query = query | subquery
         return qset.filter(query)
+
+
+class BelongstoManager(models.Manager):
+    def for_user(self, user):
+        return self.get_query_set().filter(Q(users__id=user.pk) | Q(groups__users__id=user.pk))
+
+
+class TestrunManager(models.Manager):
+    def for_user(self, user):
+        return self.get_query_set().filter(Q(schedule__test__website__users__id=user.pk) | Q(schedule__test__website__groups__users__id=user.pk))

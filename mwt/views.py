@@ -45,7 +45,7 @@ class DashboardView(TemplateView):
         }
 
     def get_tests_ctx(self):
-        c = Client.objects.all()
+        c = Client.objects.for_user(self.request.user)
         if 'ajax' in self.request.GET:
             c = [itm.__dict__ for itm in c]
         return {'clients': c}
@@ -57,12 +57,11 @@ class DashboardView(TemplateView):
             ('Date Created', 'date_created'),
             ('Date Started', 'date_started'),
             ('Date finished', 'date_finished'),
-            ('Duration', 'duration'),
+            ('Duration', None),
             ('Task', 'task'),
             ('Schedule', 'schedule'),
         )
-
-        return self.paginate(items=Testrun.objects.all(), columns=columns, item_template='run-item.html')
+        return self.paginate(items=Testrun.objects.for_user(self.request.user).order_by('-date_created'), columns=columns, item_template='run-item.html')
 
     def paginate(self, items, columns, item_template):
         i, o, b = simple_paginator.paginate(self.request, self.view_name, items, columns=columns, per_page=7)

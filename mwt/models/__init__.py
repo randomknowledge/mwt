@@ -1,7 +1,8 @@
-import abstract
-import base
-import plugins
+from abstract import Plugin, PluginOption
+from base import UserProfile, Client, Website, Test, Testrun, RunSchedule, MWTGroup
+from plugins import TaskPlugin, NotificationPlugin, TaskPluginOption, NotificationPluginOption
 
 
-# pyflakes workaround
-abstract, base, plugins
+__all__ = ['Plugin', 'PluginOption', 'UserProfile', 'Client', 'Website',
+           'Test', 'Testrun', 'RunSchedule', 'TaskPlugin', 'NotificationPlugin',
+           'TaskPluginOption', 'NotificationPluginOption', 'MWTGroup', ]

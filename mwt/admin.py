@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models.base import RunSchedule, Client, Website, Test, Testrun
+from .models.base import RunSchedule, Client, Website, Test, Testrun, MWTGroup
 from .models.plugins import TaskPlugin, NotificationPlugin, TaskPluginOption, NotificationPluginOption
 
 
@@ -83,6 +83,11 @@ class RunScheduleAdmin(admin.ModelAdmin):
         return False
 
 
+class MWTGroupAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(MWTGroup, MWTGroupAdmin)
 admin.site.register(Client, ClientAdmin)
 admin.site.register(Website, WebsiteAdmin)
 admin.site.register(Test, TestAdmin)
