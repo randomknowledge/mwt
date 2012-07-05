@@ -5,6 +5,7 @@ from django.views.generic.base import TemplateView
 from . import constants
 from .models.base import Client, Testrun
 import simple_paginator
+from mwt.utils.nodejs import send_nodejs_notification
 from .utils.http import JsonResponse
 
 

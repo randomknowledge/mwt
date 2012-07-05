@@ -1,3 +1,7 @@
+try:
+    from announce.templatetags import announcetags
+except Exception:
+    pass
 import re
 import math
 from django import template
@@ -7,6 +11,16 @@ from .. import constants
 
 
 register = template.Library()
+
+
+@register.simple_tag
+def mwt_announce_js():
+    if constants.MWT_SETTINGS.get('use_nodejs'):
+        try:
+            return announcetags.announce_js()
+        except Exceptione:
+            pass
+    return ''
 
 
 @register.filter

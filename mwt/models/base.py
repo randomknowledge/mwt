@@ -195,6 +195,18 @@ class Testrun(models.Model):
     admin_result.allow_tags = True
     admin_result.short_description = 'Result'
 
+    @property
+    def users(self):
+        u = []
+        for group in self.schedule.test.website.groups.all():
+            for user in group.users.all():
+                if not user in u:
+                    u.append(user)
+        for user in self.schedule.test.website.users.all():
+            if not user in u:
+                u.append(user)
+        return u
+
     def save(self, *args, **kwargs):
         success = False
         try:

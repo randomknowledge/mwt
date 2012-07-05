@@ -4,8 +4,10 @@ from django.core.management.base import BaseCommand
 from ... import registered_tasks, registered_notifications
 import re
 from ...models.base import Testrun, RunSchedule
+from ...utils.exceptions import get_stacktrace_string
+from ...utils.nodejs import send_nodejs_notification
 from ...utils.log import logger
-from ...utils.queue import enqueue, set_run_finished, get_run_counter, clear_run
+from ...utils.queue import enqueue, set_run_finished, clear_run, get_run_pks, set_runs_expected, get_runs_expected, clear_runs_expected
 
 
 class Command(BaseCommand):
@@ -47,6 +49,8 @@ class Command(BaseCommand):
             self.run()
 
     def run(self):
+        #Testrun.objects.all().delete()
+        #RunSchedule.objects.all().update(run_id=0, last_run=None)
         logger.debug('Checking Schedules...')
         try:
             found = False
@@ -57,14 +61,22 @@ class Command(BaseCommand):
                     schedule.run_id = schedule.run_id + 1
                     schedule.last_run = datetime.now()
                     schedule.save()
+
+                    run_objects = []
+                    run_object_ids = []
                     for task in schedule.test.tasks.all():
                         run_obj = Testrun(schedule=schedule, task=task)
                         run_obj.save()
-                        logger.info("Executing Task %s" % task)
+                        run_objects.append(run_obj)
+                        run_object_ids.append(str(run_obj.pk))
 
-                        self.enqueue_task(str(task.dsn), run_obj)
-                except Exception, e:
-                    logger.fatal("Unable to get Task for Test '%s': %s" % (schedule.test, e))
+                    set_runs_expected(schedule.run_id, ','.join(run_object_ids))
+
+                    for run in run_objects:
+                        logger.info("Executing Task %s" % run.task)
+                        self.enqueue_task(str(run.task.dsn), run)
+                except Exception:
+                    logger.fatal("Unable to get Task for Test '%s': %s" % (schedule.test, get_stacktrace_string()))
             if not found:
                 logger.debug('No pending schedules')
         except Exception:
@@ -72,6 +84,12 @@ class Command(BaseCommand):
 
     def enqueue_task(self, task, run_obj):
         enqueue(run_task, registered_tasks.get(task), run_obj, queue='tasks')
+        try:
+            for user in run_obj.users:
+                send_nodejs_notification(user.pk, {'action': 'task-enqueued', 'run': run_obj.pk})
+        except Exception:
+            pass
+
 
     def explain(self):
         print self._usage
@@ -79,14 +97,25 @@ class Command(BaseCommand):
 
 def run_task(task_obj, run_obj):
     result = task_obj.run(run_obj)
-    set_run_finished(run_obj.schedule.run_id)
-    if get_run_counter(run_obj.schedule.run_id) >= len(run_obj.schedule.test.tasks.all()):
+    set_run_finished(run_obj.schedule.run_id, run_obj.pk)
+
+    try:
+        for user in run_obj.users:
+            send_nodejs_notification(user.pk, {'action': 'task-finished', 'run': run_obj.pk})
+    except Exception:
+        pass
+
+    if get_runs_expected(run_obj.schedule.run_id) == get_run_pks(run_obj.schedule.run_id):
         clear_run(run_obj.schedule.run_id)
+        clear_runs_expected(run_obj.schedule.run_id)
         enqueue(notify, run_obj.schedule, queue='notifications')
     return result
 
 
 def notify(schedule):
-    runs = Testrun.objects.filter(schedule=schedule)
-    for notification in schedule.test.notifications.all():
-        registered_notifications.get(str(notification.dsn)).run(runs, schedule)
+    try:
+        runs = Testrun.objects.filter(pk__in=get_run_pks(schedule.run_id))
+        for notification in schedule.test.notifications.all():
+            registered_notifications.get(str(notification.dsn)).run(runs, schedule)
+    except Exception:
+        logger.info(get_stacktrace_string())
