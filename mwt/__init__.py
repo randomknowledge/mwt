@@ -9,6 +9,6 @@ registered_notifications = {}
 try:
     registered_tasks = tasks.register_plugins('tasks')
     registered_notifications = tasks.register_plugins('notifications')
-except Exception, e:
+except Exception:
     logger.log('error', "Couldn't register Plugins: %s"
             % get_stacktrace_string())

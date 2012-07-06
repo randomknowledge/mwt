@@ -27,97 +27,35 @@ def enqueue(function, *args, **kwargs):
 
 def set_value(key, value):
     setup_rq_connection()
-    get_current_connection().set(key, value)
+    if value is None:
+        delete_key(key)
+    elif type(value) in [int, float, long, bool, str, unicode]:
+        get_current_connection().set(key, value)
+    elif type(value) in [list, tuple]:
+        delete_key(key)
+        for entry in value:
+            get_current_connection().rpush(key, entry)
+    else:
+        raise ValueError("Type '%s' not supported!" % type(value))
 
 
 def get_value(key):
     setup_rq_connection()
-    return get_current_connection().get(key)
-
-
-def set_run_finished(schedule_run_id, run_pk):
-    v = get_run_counter(schedule_run_id)
-    pks = get_run_pks_str(schedule_run_id)
-
-    if not pks:
-        pks = str(run_pk)
+    keytype = get_current_connection().type(key)
+    if keytype == 'list':
+        return get_current_connection().lrange(key, 0, -1)
     else:
-        pks = "%s,%s" % (pks, run_pk)
-
-    set_value("mwt:schedule:%d:runs" % schedule_run_id, pks)
-    set_value("mwt:schedule:%d" % schedule_run_id, v + 1)
+        return get_current_connection().get(key)
 
 
-def get_run_pks_str(schedule_run_id):
+def add_to_list(key, value):
     setup_rq_connection()
-    pks = ''
-    try:
-        pks = get_value("mwt:schedule:%d:runs" % schedule_run_id)
-        if not pks:
-            pks = ''
-    except Exception:
-        pass
-    return pks
-
-def get_run_pks(schedule_run_id):
-    pks_str = get_run_pks_str(schedule_run_id)
-    if not pks_str:
-        return []
-    if pks_str.find(',') == -1:
-        return [int(pks_str)]
-
-    pks = []
-    for pk in pks_str.split(','):
-        pks.append(int(pk))
-
-    pks.sort()
-    return pks
+    keytype = get_current_connection().type(key)
+    if keytype == 'none':
+        set_value(key, [value,])
+    elif keytype == 'list':
+        get_current_connection().rpush(key, value)
 
 
-def set_runs_expected(schedule_run_id, str_obj_ids):
-    setup_rq_connection()
-    set_value("mwt:schedule:%d:runs_expected" % schedule_run_id, str_obj_ids)
-
-
-def get_runs_expected_str(schedule_run_id):
-    setup_rq_connection()
-    pks = ''
-    try:
-        pks = get_value("mwt:schedule:%d:runs_expected" % schedule_run_id)
-        if not pks:
-            pks = ''
-    except Exception:
-        pass
-    return pks
-
-def get_runs_expected(schedule_run_id):
-    pks_str = get_runs_expected_str(schedule_run_id)
-    if not pks_str:
-        return []
-    if pks_str.find(',') == -1:
-        return [int(pks_str)]
-
-    pks = []
-    for pk in pks_str.split(','):
-        pks.append(int(pk))
-    pks.sort()
-    return pks
-
-
-def clear_runs_expected(schedule_run_id):
-    setup_rq_connection()
-    get_current_connection().delete("mwt:schedule:%d:runs_expected" % schedule_run_id)
-
-
-def get_run_counter(schedule_run_id):
-    v = 0
-    try:
-        v = int(get_value("mwt:schedule:%d" % schedule_run_id))
-    except Exception:
-        pass
-    return v
-
-
-def clear_run(schedule_run_id):
-    setup_rq_connection()
-    get_current_connection().delete("mwt:schedule:%d" % schedule_run_id)
+def delete_key(key):
+    get_current_connection().delete(key)

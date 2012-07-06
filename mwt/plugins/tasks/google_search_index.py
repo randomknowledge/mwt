@@ -26,7 +26,6 @@ class Main(CasperJSTaskPlugin):
             raise Exception("CasperJS was unsuccessful: %s" % self.javascript_result.get('message'))
 
         if not 'message' in self.javascript_result:
-            print "SUCCESS: %s" % self.javascript_result.get('success', False)
             if self.javascript_result.get('success', False):
                 self.javascript_result['message'] = "'%s' found at position %d. "\
                         "Desired searchindex was %s"\
