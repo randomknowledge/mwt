@@ -90,12 +90,15 @@ RUN_SCHEDULES = {
 RUN_REPEAT_CHOICES = tuple([(key, value.get('description')) for key, value in RUN_SCHEDULES.iteritems()])
 
 if MWT_SETTINGS.get('use_nodejs', False):
-    settings.INSTALLED_APPS += ('announce', )
-    idx = 0
-    try:
-        idx = settings.MIDDLEWARE_CLASSES.index('django.contrib.sessions.middleware.SessionMiddleware')
-    except Exception:
-        pass
-    c = list(settings.MIDDLEWARE_CLASSES)
-    c.insert(idx, 'announce.middleware.AnnounceCookieMiddleware')
-    settings.MIDDLEWARE_CLASSES = tuple(c)
+    if not 'announce' in settings.INSTALLED_APPS:
+        settings.INSTALLED_APPS += ('announce', )
+
+    if not 'announce.middleware.AnnounceCookieMiddleware' in settings.MIDDLEWARE_CLASSES:
+        idx = 0
+        try:
+            idx = settings.MIDDLEWARE_CLASSES.index('django.contrib.sessions.middleware.SessionMiddleware')
+        except Exception:
+            pass
+        c = list(settings.MIDDLEWARE_CLASSES)
+        c.insert(idx, 'announce.middleware.AnnounceCookieMiddleware')
+        settings.MIDDLEWARE_CLASSES = tuple(c)

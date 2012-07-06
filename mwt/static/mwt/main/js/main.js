@@ -40,11 +40,10 @@ $(document).ready(function(){
     {
         if( window.announce )
         {
-            window.announce.on('notifications', function(data){
-                console.log(data.action);
+            announce.on('notifications', function(data){
                 loadTestrunData();
             });
-            window.announce.init();
+            announce.init();
         } else {
             setInterval(function(){
                 loadTestrunData();
