@@ -4,6 +4,7 @@ from time import sleep
 from django.core.management.base import BaseCommand
 from ... import registered_tasks, registered_notifications
 from ...models.base import Testrun, RunSchedule
+from ... import constants
 from ...utils.exceptions import get_stacktrace_string
 from ...utils.nodejs import send_nodejs_notification
 from ...utils.log import logger
@@ -132,19 +133,19 @@ helper functions
 """
 
 def set_runs_expected(schedule, run_obj_ids):
-    queue.set_value("mwt:schedule:%d:%d:runs_expected" % (schedule.pk, schedule.run_id), run_obj_ids)
+    queue.set_value("%s:runs_expected" % schedule_queue_prefix(schedule), run_obj_ids)
 
 
 def get_runs_expected(schedule):
-    return as_sorted_list(queue.get_value("mwt:schedule:%d:%d:runs_expected" % (schedule.pk, schedule.run_id)))
+    return as_sorted_list(queue.get_value("%s:runs_expected" % schedule_queue_prefix(schedule)))
 
 
 def set_run_finished(schedule, run_obj_id):
-    queue.add_to_list("mwt:schedule:%d:%d:runs_finished" % (schedule.pk, schedule.run_id), run_obj_id)
+    queue.add_to_list("%s:runs_finished" % schedule_queue_prefix(schedule), run_obj_id)
 
 
 def get_runs_finished(schedule, tostring=True, toint=False):
-    return as_sorted_list(queue.get_value("mwt:schedule:%d:%d:runs_finished" % (schedule.pk, schedule.run_id)), tostring=tostring, toint=toint)
+    return as_sorted_list(queue.get_value("%s:runs_finished" % schedule_queue_prefix(schedule)), tostring=tostring, toint=toint)
 
 
 def as_sorted_list(value, tostring=True, toint=False):
@@ -159,7 +160,10 @@ def as_sorted_list(value, tostring=True, toint=False):
 
 
 def clear_runs_expected(schedule):
-    queue.delete_key("mwt:schedule:%d:%d:runs_expected" % (schedule.pk, schedule.run_id))
+    queue.delete_key("%s:runs_expected" % schedule_queue_prefix(schedule))
 
 def clear_runs_finished(schedule):
-    queue.delete_key("mwt:schedule:%d:%d:runs_finished" % (schedule.pk, schedule.run_id))
+    queue.delete_key("%s:runs_finished" % schedule_queue_prefix(schedule))
+
+def schedule_queue_prefix(schedule):
+    return "%sschedule:%d:%d" % (constants.REDIS_SETTINGS.get('queue_prefix', 'mwt:'), schedule.pk, schedule.run_id)
