@@ -3,8 +3,8 @@ from django.template.loader import render_to_string
 from django.utils.decorators import classonlymethod
 from django.views.generic.base import TemplateView
 from . import constants
-from .models.base import Client, Testrun, Test
-from .models.plugins import TaskPlugin
+from .models.base import Client, Website, Testrun, Test
+from .models.plugins import TaskPlugin, NotificationPlugin
 import simple_paginator
 from .utils.http import JsonResponse
 
@@ -31,7 +31,7 @@ class DashboardView(TemplateView):
         ctx = self.get_default_context()
         ctx_func = getattr(self, "get_%s_ctx" % self.view_name, None)
         if ctx_func:
-            ctx.update(ctx_func())
+            ctx.update(ctx_func(**kwargs))
 
         return ctx
 
@@ -45,16 +45,18 @@ class DashboardView(TemplateView):
             'view_name': self.view_name,
         }
 
-    def get_tests_ctx(self):
+    def get_tests_ctx(self, **kwargs):
         c = Client.objects.for_user(self.request.user)
         if 'ajax' in self.request.GET:
             c = [itm.__dict__ for itm in c]
         return {'clients': c}
 
-    def get_testruns_ctx(self):
+    def get_testruns_ctx(self, **kwargs):
         columns = (
             ('State', 'state'),
             ('Result', 'result_successful'),
+            ('Client', 'schedule__test__website__client'),
+            ('Website', 'schedule__test__website'),
             ('Date Created', 'date_created'),
             ('Date Started', 'date_started'),
             ('Date finished', 'date_finished'),
@@ -68,18 +70,58 @@ class DashboardView(TemplateView):
 
         filteredby = ''
         if 'filterby' in self.request.GET and 'filterid' in self.request.GET:
-            if self.request.GET.get('filterby') == 'test':
-                items = items.filter(schedule__test__pk=self.request.GET.get('filterid'))
-                filteredby = "[Test] %s " % str(Test.objects.get(pk=self.request.GET.get('filterid')))
-            elif self.request.GET.get('filterby') == 'plugin':
-                items = items.filter(task__pk=self.request.GET.get('filterid'))
-                filteredby = "[Plugin] %s " % str(TaskPlugin.objects.get(pk=self.request.GET.get('filterid')))
+            f_by = self.request.GET.get('filterby')
+            f_id = self.request.GET.get('filterid')
+            if f_by == 'test':
+                items = items.filter(schedule__test__pk=f_id)
+                filteredby = "[Test] %s " % str(Test.objects.get(pk=f_id))
+            elif f_by == 'plugin':
+                items = items.filter(task__pk=f_id)
+                filteredby = "[Plugin] %s " % str(TaskPlugin.objects.get(pk=f_id))
+            elif f_by == 'client':
+                items = items.filter(schedule__test__website__client__pk=f_id)
+                filteredby = "[Client] %s " % str(Client.objects.get(pk=f_id))
+            elif f_by == 'website':
+                items = items.filter(schedule__test__website__pk=f_id)
+                filteredby = "[Website] %s " % str(Website.objects.get(pk=f_id))
+            elif f_by == 'state':
+                items = items.filter(state=f_id)
+                filteredby = "[State] %s " % constants.RUN_STATES[f_id]
+            elif f_by == 'result':
+                if f_id == 'True':
+                    items = items.filter(result_successful=True)
+                    filteredby = "[Result] okay"
+                else:
+                    items = items.filter(result_successful=False)
+                    filteredby = "[Result] not okay"
+
+        states = [{'key': key, 'type': 'state', 'value': value} for key, value in constants.RUN_STATES.iteritems()]
+        results = [
+                {'key': True, 'type': 'result', 'value': 'okay'},
+                {'key': False, 'type': 'result', 'value': 'not okay'}
+        ]
 
         return self.paginate(items=items, columns=columns, item_template='run-item.html', extra_context={
             'tests': Test.objects.for_user(self.request.user),
             'plugins': TaskPlugin.objects.all(),
+            'clients': Client.objects.for_user(self.request.user),
+            'websites': Website.objects.for_user(self.request.user),
             'filteredby': filteredby,
+            'states': states,
+            'results': results,
         })
+
+    def get_add_test_ctx(self, **kwargs):
+        w = None
+        try:
+            w = Website.objects.for_user(self.request.user).filter(pk=int(kwargs.get('website_id')))[0]
+        except Exception:
+            pass
+        return {
+            'website': w,
+            'plugins': TaskPlugin.objects.all(),
+            'notifications': NotificationPlugin.objects.all(),
+        }
 
     def paginate(self, items, columns, item_template, extra_context={}):
         i, o, b = simple_paginator.paginate(self.request, self.view_name, items, columns=columns, per_page=14)

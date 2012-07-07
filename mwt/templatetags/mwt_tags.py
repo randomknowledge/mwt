@@ -1,3 +1,5 @@
+from django.utils.safestring import SafeUnicode
+
 try:
     from announce.templatetags import announcetags
 except Exception:
@@ -9,6 +11,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ungettext
 from .. import constants
 from ..models.abstract import Plugin
+from ..models.base import Client, Website
 
 
 register = template.Library()
@@ -31,11 +34,23 @@ def get_testrun_filter_url(obj, request):
     filterby = 'test'
     if isinstance(obj, Plugin):
         filterby = 'plugin'
+    elif isinstance(obj, Client):
+        filterby = 'client'
+    elif isinstance(obj, Website):
+        filterby = 'website'
+
+    if type(obj) == dict and 'type' in obj and 'key' in obj:
+        filterby = obj.get('type')
+        id = obj.get('key')
+    elif isinstance(obj, SafeUnicode) or type(obj) == str:
+        id = ''
+    else:
+        id = obj.pk
 
     if obj:
         get.update({
             'filterby': filterby,
-            'filterid': obj.pk,
+            'filterid': id,
         })
     return '%s?%s' % (path, get.urlencode())
 

@@ -14,6 +14,43 @@
                 {% trans "Filter Testruns by..." %}
             </li>
             <li class="{% testrun_filter_active_class "" request %}"><a href="{% get_testrun_filter_url "" request %}">{% trans "Nothing" %}</a></li>
+
+            <li class="dropdown {% testrun_filter_active_class "state" request %}">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">{% trans "State" %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    {% for state in states %}
+                        <a href="{% get_testrun_filter_url state request %}" class="disabled">{{ state.value }}</a>
+                    {% endfor %}
+                </ul>
+            </li>
+
+            <li class="dropdown {% testrun_filter_active_class "result" request %}">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">{% trans "Result" %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    {% for result in results %}
+                        <a href="{% get_testrun_filter_url result request %}" class="disabled">{{ result.value }}</a>
+                    {% endfor %}
+                </ul>
+            </li>
+
+            <li class="dropdown {% testrun_filter_active_class "client" request %}">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">{% trans "Client" %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    {% for client in clients %}
+                        <a href="{% get_testrun_filter_url client request %}" class="disabled">{{ client }}</a>
+                    {% endfor %}
+                </ul>
+            </li>
+
+            <li class="dropdown {% testrun_filter_active_class "website" request %}">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">{% trans "Website" %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    {% for website in websites %}
+                        <a href="{% get_testrun_filter_url website request %}" class="disabled">{{ website }}</a>
+                    {% endfor %}
+                </ul>
+            </li>
+
             <li class="dropdown {% testrun_filter_active_class "test" request %}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">{% trans "Test" %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
@@ -22,6 +59,7 @@
                     {% endfor %}
                 </ul>
             </li>
+
             <li class="dropdown {% testrun_filter_active_class "plugin" request %}">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#">{% trans "Plugin" %}<b class="caret"></b></a>
                 <ul class="dropdown-menu">

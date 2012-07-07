@@ -12,9 +12,10 @@
     <meta name="author" content="">
 
     {% block css %}
-    <link href="{% static "mwt/main/css/bootstrap.css" %}" rel="stylesheet">
-    <link href="{% static "mwt/main/css/main.css" %}" rel="stylesheet">
-    <link href="{% static "mwt/main/css/bootstrap-responsive.css" %}" rel="stylesheet">
+        <link href="{% static "mwt/main/css/bootstrap.css" %}" rel="stylesheet">
+        <link href="{% static "mwt/main/css/jquery.colorbox.css" %}" rel="stylesheet">
+        <link href="{% static "mwt/main/css/main.css" %}" rel="stylesheet">
+        <link href="{% static "mwt/main/css/bootstrap-responsive.css" %}" rel="stylesheet">
     {% endblock %}
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -33,6 +34,7 @@
     <script type="text/javascript" language="javascript">
         {% block pre_js_inner %}
         view_name = '{{ view_name }}';
+        static_path = '{% static "mwt/main/" %}';
         {% endblock %}
     </script>
     {% endblock %}
@@ -83,20 +85,21 @@
 {% endblock %}
 </div>
 {% block js %}
-<script src="{% static "mwt/main/js/lib/jquery.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-transition.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-alert.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-modal.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-dropdown.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-scrollspy.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-tab.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-tooltip.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-popover.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-button.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-collapse.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-carousel.js" %}"></script>
-<script src="{% static "mwt/main/js/lib/bootstrap-typeahead.js" %}"></script>
-<script src="{% static "mwt/main/js/main.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/jquery.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/jquery.colorbox.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-transition.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-alert.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-modal.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-dropdown.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-scrollspy.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-tab.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-tooltip.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-popover.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-button.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-collapse.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-carousel.js" %}"></script>
+    <script src="{% static "mwt/main/js/lib/bootstrap-typeahead.js" %}"></script>
+    <script src="{% static "mwt/main/js/main.js" %}"></script>
 {% endblock %}
 {% endblock %}
 </body>

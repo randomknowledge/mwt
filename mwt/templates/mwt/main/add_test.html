@@ -1,0 +1,49 @@
+{% extends 'mwt/main/bootstrap.html' %}
+{% load i18n %}
+
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<form class="well form-horizontal">
+    <input type="hidden" name="website" value="{{ website.pk }}">
+    <fieldset>
+        <legend>{% trans "Add Test for " %}<a>{{ website }}</a></legend>
+        <div class="control-group">
+            <label class="control-label" for="description">{% trans "Description" %}</label>
+            <div class="controls">
+                <input type="text" class="input-xxlarge" id="description" name="description">
+                <!--<p class="help-block">Supporting help text</p>-->
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="plugins">{% trans "Plugins" %}</label>
+            <div class="controls">
+                <select multiple="multiple" id="plugins" name="plugins" size="6" class="input-xxlarge">
+                    {% for plugin in plugins %}
+                    <option value="{{ plugin.pk }}">{{ plugin.name }}</option>
+                    {% endfor %}
+                </select>
+                <p class="help-block">{% trans "Halten Sie die Strg-Taste (⌘ für Mac) während des Klickens gedrückt, um mehrere Einträge auszuwählen." %}</p>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="notifications">{% trans "Notifications" %}</label>
+            <div class="controls">
+                <select multiple="multiple" id="notifications" name="notifications" size="6" class="input-xxlarge">
+                    {% for notification in notifications %}
+                        <option value="{{ notification.pk }}">{{ notification.name }}</option>
+                    {% endfor %}
+                </select>
+                <p class="help-block">{% trans "Halten Sie die Strg-Taste (⌘ für Mac) während des Klickens gedrückt, um mehrere Einträge auszuwählen." %}</p>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit"><i class="icon-ok-sign icon-white"></i> {% trans "Add Test" %}</button>
+            <button class="btn">{% trans "Cancel" %}</button>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

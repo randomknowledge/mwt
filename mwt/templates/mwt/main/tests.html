@@ -25,6 +25,9 @@
                                             {% if not website.test_set.all %}
                                                 <p>{% trans "No Tests" %}</p>
                                             {% else %}
+                                                <p class="btn-group">
+                                                    <a class="btn btn-success" href="{% url 'mwt_add_test' website.pk %}" rel="lightbox"><i class="icon-plus-sign icon-white"></i> {% trans "Add Test" %}</a>
+                                                </p>
                                                 <table class="table table-bordered">
                                                     <thead>
                                                     <tr>

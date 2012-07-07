@@ -3,6 +3,8 @@
 <tr id="run-{{ item.pk }}">
     <td><span class="label label-{{ item.state|state_to_bootstrap }}">{{ item.state|ucfirst }}</span></td>
     <td><span class="label label-{{ item.result_successful|state_to_bootstrap }}">{% if item.result_successful %}{% trans "okay" %}{% else %}{% trans "not okay" %}{% endif %}</span></td>
+    <td>{{ item.schedule.test.website.client }}</td>
+    <td>{{ item.schedule.test.website.name }}</td>
     <td>{{ item.date_created }}</td>
     <td>{{ item.date_started }}</td>
     <td>{{ item.date_finished }}</td>

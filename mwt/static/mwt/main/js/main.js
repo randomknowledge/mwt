@@ -1,6 +1,11 @@
 $(document).ready(function(){
     $('*[data-rel=popover]').popover();
     $('*[rel=tooltip]').tooltip();
+    $('*[rel=lightbox]').colorbox({
+        iframe:true,
+        width:"80%",
+        height:"95%"
+    });
 
 
     function loadTestrunData()
