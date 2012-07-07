@@ -1,21 +1,9 @@
 {% load helpers %}
 
-{% with num_pages=items.paginator.num_pages current_page=items.number ellipsis='<li class="active"><a href="#">...</a></li>' %}
+{% with num_pages=items.paginator.num_pages current_page=items.number ellipsis='<li class="disabled"><a href="#">...</a></li>' %}
 
     {% if num_pages > 1 %}
         <div class="paginator_control pagination" xmlns="http://www.w3.org/1999/html">
-
-            {% comment %}
-            1. If max_page <= 9:
-                - No dots
-            2. If max_page > 9 and page <= 5:
-                - Right dots
-            3. If max_page > 9 and page > 5 and (max_page - page > 5):
-                - Right and left dots
-            4. Else
-                - Left dots
-        {% endcomment %}
-
             {% if num_pages <= 9 %}
                 {% for page in items.paginator.page_range %}
                     {% if page == current_page %}

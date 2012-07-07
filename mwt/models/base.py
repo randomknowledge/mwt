@@ -9,7 +9,7 @@ from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from .plugins import TaskPluginOption, NotificationPluginOption
 from ..utils.time import get_tz
-from ..managers import RunScheduleManager, BelongstoManager, TestrunManager
+from ..managers import RunScheduleManager, BelongstoManager, TestrunManager, TestManager
 
 
 class MWTGroup(models.Model):
@@ -81,6 +81,8 @@ class Test(models.Model):
     description = models.CharField(max_length=255, null=False, blank=False)
     tasks = models.ManyToManyField('TaskPlugin', related_name='+')
     notifications = models.ManyToManyField('NotificationPlugin', related_name='+', null=True, blank=True)
+
+    objects = TestManager()
 
     class Meta:
         app_label = 'mwt'

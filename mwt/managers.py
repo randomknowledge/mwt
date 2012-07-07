@@ -33,3 +33,8 @@ class BelongstoManager(models.Manager):
 class TestrunManager(models.Manager):
     def for_user(self, user):
         return self.get_query_set().filter(Q(schedule__test__website__users__id=user.pk) | Q(schedule__test__website__groups__users__id=user.pk))
+
+
+class TestManager(models.Manager):
+    def for_user(self, user):
+        return self.get_query_set().filter(Q(website__users__id=user.pk) | Q(website__groups__users__id=user.pk))

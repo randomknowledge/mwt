@@ -3,9 +3,9 @@ from django.template.loader import render_to_string
 from django.utils.decorators import classonlymethod
 from django.views.generic.base import TemplateView
 from . import constants
-from .models.base import Client, Testrun
+from .models.base import Client, Testrun, Test
+from .models.plugins import TaskPlugin
 import simple_paginator
-from mwt.utils.nodejs import send_nodejs_notification
 from .utils.http import JsonResponse
 
 
@@ -59,13 +59,30 @@ class DashboardView(TemplateView):
             ('Date Started', 'date_started'),
             ('Date finished', 'date_finished'),
             ('Duration', None),
-            ('Task', 'task'),
+            ('Test', 'schedule__test'),
+            ('Plugin', 'task'),
             ('Schedule', 'schedule'),
         )
-        return self.paginate(items=Testrun.objects.for_user(self.request.user).order_by('-date_created'), columns=columns, item_template='run-item.html')
 
-    def paginate(self, items, columns, item_template):
-        i, o, b = simple_paginator.paginate(self.request, self.view_name, items, columns=columns, per_page=7)
+        items = Testrun.objects.for_user(self.request.user).order_by('-date_created')
+
+        filteredby = ''
+        if 'filterby' in self.request.GET and 'filterid' in self.request.GET:
+            if self.request.GET.get('filterby') == 'test':
+                items = items.filter(schedule__test__pk=self.request.GET.get('filterid'))
+                filteredby = "[Test] %s " % str(Test.objects.get(pk=self.request.GET.get('filterid')))
+            elif self.request.GET.get('filterby') == 'plugin':
+                items = items.filter(task__pk=self.request.GET.get('filterid'))
+                filteredby = "[Plugin] %s " % str(TaskPlugin.objects.get(pk=self.request.GET.get('filterid')))
+
+        return self.paginate(items=items, columns=columns, item_template='run-item.html', extra_context={
+            'tests': Test.objects.for_user(self.request.user),
+            'plugins': TaskPlugin.objects.all(),
+            'filteredby': filteredby,
+        })
+
+    def paginate(self, items, columns, item_template, extra_context={}):
+        i, o, b = simple_paginator.paginate(self.request, self.view_name, items, columns=columns, per_page=14)
 
         num_pages = i.paginator.num_pages
 
@@ -78,7 +95,7 @@ class DashboardView(TemplateView):
 
             i = items
 
-        return {
+        ctx = {
             'items': i,
             'order': o,
             'num_pages': num_pages,
@@ -86,6 +103,8 @@ class DashboardView(TemplateView):
             'columns': columns,
             'prefix': self.view_name,
         }
+        ctx.update(extra_context)
+        return ctx
 
     def get(self, request, *args, **kwargs):
         if 'ajax' in request.GET:

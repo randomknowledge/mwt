@@ -8,12 +8,43 @@
 {% endblock %}
 
 {% block content %}
-{% if items %}
+    <div class="filter-navigation">
+        <ul class="nav nav-tabs">
+            <li class="nav-header">
+                {% trans "Filter Testruns by..." %}
+            </li>
+            <li class="{% testrun_filter_active_class "" request %}"><a href="{% get_testrun_filter_url "" request %}">{% trans "Nothing" %}</a></li>
+            <li class="dropdown {% testrun_filter_active_class "test" request %}">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">{% trans "Test" %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    {% for test in tests %}
+                        <a href="{% get_testrun_filter_url test request %}" class="disabled">{{ test }}</a>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li class="dropdown {% testrun_filter_active_class "plugin" request %}">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">{% trans "Plugin" %}<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    {% for plugin in plugins %}
+                        <a href="{% get_testrun_filter_url plugin request %}" class="disabled">{{ plugin }}</a>
+                    {% endfor %}
+                </ul>
+            </li>
+        </ul>
+        {% if filteredby %}
+        <div class="alert alert-info fade in">
+            <a href="{% get_testrun_filter_url "" request %}" class="close" type="button">×</a>
+            <strong>{% trans "Filtered by:" %}</strong> {{ filteredby }}
+        </div>
+        {% endif %}
+    </div>
     <div class="simple_paginator">
-        <table class="table table-bordered">
+        <table class="table table-bordered table-condensed table-striped">
+            {% if items %}
             <thead>
-            {% include 'simple_paginator/paginator_header.html' %}
+            {% include 'mwt/main/snippets/paginator_header.html' %}
             </thead>
+            {% endif %}
             <tbody id="runs">
                 {% for item in items.object_list %}
                     {% include "mwt/main/snippets/run-item.html" %}
@@ -22,5 +53,4 @@
         </table>
         {% include 'mwt/main/snippets/paginator_control.html' %}
     </div>
-{% endif %}
 {% endblock %}

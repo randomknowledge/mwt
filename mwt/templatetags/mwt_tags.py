@@ -8,9 +8,43 @@ from django import template
 from django.core.urlresolvers import reverse
 from django.utils.translation import ungettext
 from .. import constants
+from ..models.abstract import Plugin
 
 
 register = template.Library()
+
+@register.simple_tag
+def re_replace(string, pattern, replace):
+    return re.sub(pattern, replace, string)
+
+
+@register.simple_tag
+def get_testrun_filter_url(obj, request):
+    path = request.META.get('PATH_INFO')
+
+    get = request.GET.copy()
+    if 'filterby' in get:
+        get.pop('filterby')
+    if 'filterid' in get:
+        get.pop('filterid')
+
+    filterby = 'test'
+    if isinstance(obj, Plugin):
+        filterby = 'plugin'
+
+    if obj:
+        get.update({
+            'filterby': filterby,
+            'filterid': obj.pk,
+        })
+    return '%s?%s' % (path, get.urlencode())
+
+
+@register.simple_tag
+def testrun_filter_active_class(filterby, request):
+    if request.GET.get('filterby', '') == filterby:
+        return 'active'
+    return ''
 
 
 @register.simple_tag

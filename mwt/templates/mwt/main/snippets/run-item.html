@@ -7,6 +7,7 @@
     <td>{{ item.date_started }}</td>
     <td>{{ item.date_finished }}</td>
     <td>{{ item.duration|format_timedelta }}</td>
+    <td><span class="label">{{ item.schedule.test }}</span></td>
     <td><span class="label">{{ item.task.name }}</span></td>
     <td><span class="label">{{ item.schedule.description }}</span></td>
 </tr>
