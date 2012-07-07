@@ -40,7 +40,7 @@
     {% endblock %}
 </head>
 
-<body>
+<body class="{{ view_name }}">
 {% block body %}
 {% block navbar %}
     <div class="navbar navbar-fixed-top">
@@ -99,6 +99,9 @@
     <script src="{% static "mwt/main/js/lib/bootstrap-collapse.js" %}"></script>
     <script src="{% static "mwt/main/js/lib/bootstrap-carousel.js" %}"></script>
     <script src="{% static "mwt/main/js/lib/bootstrap-typeahead.js" %}"></script>
+    <script src="{% static "mwt/main/js/testruns.js" %}"></script>
+    <script src="{% static "mwt/main/js/tests.js" %}"></script>
+    <script src="{% static "mwt/main/js/add_test.js" %}"></script>
     <script src="{% static "mwt/main/js/main.js" %}"></script>
 {% endblock %}
 {% endblock %}

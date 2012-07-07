@@ -24,3 +24,49 @@ td span.label {
     margin: 0;
     padding: 0;
 }
+
+.add_test .plugin-button
+{
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.add_test .plugin-button i
+{
+    background-position: -120px -144px;
+}
+
+.add_test .plugin-button.active i
+{
+    background-position: -96px -144px;
+}
+
+.add_test .options table
+{
+    margin-bottom: 8px;
+}
+
+.add_test .options table thead tr td
+{
+    font-weight: bold;
+}
+
+.add_test .options .plugin-options
+{
+    display: none;
+}
+
+.add_test .options .plugin-options.active
+{
+    display: block;
+}
+
+.plugin-options-accordion
+{
+    background-color: #FCF8E3;
+}
+
+.notification-options-accordion
+{
+    background-color: #D9EDF7;
+}

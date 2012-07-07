@@ -153,3 +153,6 @@ class DashboardView(TemplateView):
             return JsonResponse(self.get_context_data(**kwargs))
         else:
             return super(DashboardView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return super(DashboardView, self).get(request, *args, **kwargs)

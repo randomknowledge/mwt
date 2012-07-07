@@ -38,6 +38,10 @@ class Plugin(models.Model):
     def versionnumber(self):
         return helper.versionnumber(str(self.versionfield))
 
+    @property
+    def params_list(self):
+        return self.params.split(',')
+
 
 class PluginOption(models.Model):
     test = models.ForeignKey('Test', related_name='+')
