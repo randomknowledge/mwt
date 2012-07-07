@@ -1,4 +1,5 @@
 import sys
+from django.utils import simplejson
 from .models.plugins import TaskPlugin, NotificationPlugin
 from . import helper
 from .utils.exceptions import get_stacktrace_string
@@ -61,7 +62,7 @@ def register_plugins(type):
             p.author = str(plugin.__author__)
             p.description = str(plugin.__description__)
             p.versionfield = str(plugin.__version__)
-            p.params = ','.join(plugin.__params__ or [])
+            p.params = simplejson.dumps(plugin.__params__)
             p.save()
         else:
             logger.log('debug', "Plugin '%s' with higher or same Version "

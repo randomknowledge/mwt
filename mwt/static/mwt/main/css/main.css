@@ -70,3 +70,21 @@ td span.label {
 {
     background-color: #D9EDF7;
 }
+
+.btn-boolean .off,
+.btn-boolean.active .on
+{
+    display: inline;
+}
+
+
+.btn-boolean .on,
+.btn-boolean.active .off
+{
+    display: none;
+}
+
+.btn-boolean.active
+{
+    background-color: #468847;
+}

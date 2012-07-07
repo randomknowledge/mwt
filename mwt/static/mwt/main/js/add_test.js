@@ -19,5 +19,9 @@ $(document).ready(function(){
             }
             $('#' + base + '-options-' + id).toggleClass('active', active);
         });
+
+        $('.btn-boolean').click(function(event){
+            event.preventDefault();
+        });
     }
 });

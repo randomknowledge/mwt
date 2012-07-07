@@ -56,7 +56,7 @@
             <form class="well form-vertical">
                 <legend>{% trans "Options" %}</legend>
                 {% for plugin in plugins %}
-                    {% if plugin.params %}
+                    {% if plugin.has_params %}
                         <div class="accordion plugin-options-accordion">
                             <div class="accordion-group plugin-options plugin" id="plugin-options-{{ plugin.pk }}">
                                 <div class="accordion-heading">
@@ -66,9 +66,19 @@
                                 </div>
                                 <div class="accordion-body" id="plugin-options-body-{{ plugin.pk }}">
                                     <div class="accordion-inner">
-                                        {% for param in plugin.params_list %}
-                                            <label class="control-label" for="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}">{{ param }}</label>
-                                            <div class="controls"><input type="text" class="input input-medium" name="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" id="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" /></div>
+                                        {% for param, opts in plugin.params_dict.items %}
+                                            <label class="control-label" for="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}">{{ opts.description|default:param }}:</label>
+                                            <div class="controls">
+                                                {% if opts.type == 'number' %}
+                                                    <input value="{{ opts.default }}" type="number" class="input input-medium" name="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" id="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" />
+                                                {% elif opts.type == 'boolean' %}
+                                                    <button class="btn btn-boolean btn-danger{% if opts.default %} active{% endif %}" data-toggle="button" id="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}"><span class="on">{% trans "Yes" %}</span><span class="off">{% trans "No" %}</span></button>
+                                                {% elif opts.type == 'text' %}
+                                                    <textarea class="input input-medium" name="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" id="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}">{{ opts.default }}</textarea>
+                                                {% else %}
+                                                    <input value="{{ opts.default }}" type="text" class="input input-medium" name="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" id="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" />
+                                                {% endif %}
+                                            </div>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -79,7 +89,7 @@
 
 
                 {% for notification in notifications %}
-                    {% if notification.params %}
+                    {% if notification.has_params %}
                         <div class="accordion notification-options-accordion">
                             <div class="accordion-group plugin-options notification" id="notification-options-{{ notification.pk }}">
                                 <div class="accordion-heading">
@@ -89,9 +99,19 @@
                                 </div>
                                 <div class="accordion-body" id="notification-options-body-{{ notification.pk }}">
                                     <div class="accordion-inner">
-                                        {% for param in notification.params_list %}
-                                            <label class="control-label" for="notification-param-{{ notification.pk }}-{{ forloop.counter }}">{{ param }}</label>
-                                            <div class="controls"><input type="text" class="input input-medium" name="notification-param-{{ notification.pk }}-{{ forloop.counter }}" id="notification-param-{{ notification.pk }}-{{ forloop.counter }}" /></div>
+                                        {% for param, opts in notification.params_dict.items %}
+                                            <label class="control-label" for="notification-param-{{ notification.pk }}-{{ forloop.counter }}">{{ opts.description|default:param }}:</label>
+                                            <div class="controls">
+                                                {% if opts.type == 'number' %}
+                                                    <input value="{{ opts.default }}" type="number" class="input input-medium" name="notification-param-{{ notification.pk }}-{{ forloop.counter }}" id="notification-param-{{ notification.pk }}-{{ forloop.counter }}" />
+                                                {% elif opts.type == 'boolean' %}
+                                                    <button class="btn btn-boolean btn-danger{% if opts.default %} active{% endif %}" data-toggle="button" id="notification-param-{{ notification.pk }}-{{ forloop.counter }}"><span class="on">{% trans "Yes" %}</span><span class="off">{% trans "No" %}</span></button>
+                                                {% elif opts.type == 'text' %}
+                                                    <textarea class="input input-medium" name="notification-param-{{ notification.pk }}-{{ forloop.counter }}" id="notification-param-{{ notification.pk }}-{{ forloop.counter }}">{{ opts.default }}</textarea>
+                                                {% else %}
+                                                    <input value="{{ opts.default }}" type="text" class="input input-medium" name="notification-param-{{ notification.pk }}-{{ forloop.counter }}" id="notification-param-{{ notification.pk }}-{{ forloop.counter }}" />
+                                                {% endif %}
+                                            </div>
                                         {% endfor %}
                                     </div>
                                 </div>

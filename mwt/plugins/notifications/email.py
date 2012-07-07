@@ -11,6 +11,23 @@ __pluginname__ = 'MWT E-Mail Notification Plugin'
 __description__ = """n/t"""
 __params__ = ['to', 'fail_only']
 
+__params__ = {
+    'to': {
+        'description': u'Recipient Addresses (comma seperated)',
+        'mandatory': True,
+        'type': 'text',
+        'must_match': '\S+',
+        'default': '',
+    },
+    'fail_only': {
+        'description': u'Only send notification if test fails',
+        'mandatory': True,
+        'type': 'boolean',
+        'default': False,
+        'must_match': '',
+    },
+}
+
 
 class Main(BaseNotificationPlugin):
 

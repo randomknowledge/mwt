@@ -8,7 +8,29 @@ __pluginname__ = 'MWT Google Search Index Plugin'
 __description__ = """MWT Google Search Index Plugin
 Checks the position in google search for a given keyword.
 """
-__params__ = ['search', 'url_regex', 'desired_searchindex']
+__params__ = {
+    'search': {
+        'description': u'Search Google for word(s)',
+        'mandatory': True,
+        'type': 'string',
+        'must_match': '\S+',
+        'default': '',
+    },
+    'url_regex': {
+        'description': u'URL Regex to search for in results',
+        'mandatory': True,
+        'type': 'string',
+        'must_match': '\S+',
+        'default': '',
+    },
+    'desired_searchindex': {
+        'description': u'',
+        'mandatory': True,
+        'type': 'number',
+        'must_match': '^\d{1,3}$',
+        'default': 1,
+    },
+}
 
 
 class Main(CasperJSTaskPlugin):

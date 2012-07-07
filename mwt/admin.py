@@ -47,14 +47,10 @@ class TestrunAdmin(admin.ModelAdmin):
 
 class TestAdmin(admin.ModelAdmin):
     inlines = (TaskPluginOptionInline, NotificationPluginOptionInline, RunScheduleInline)
-    change_form_template = 'admin/test_change_form.html'
     list_display = ('description', 'task_list', 'notification_list', 'website')
     list_display_links = ('description', 'task_list', 'notification_list', 'website')
     list_filter = ('website__name', 'notifications', 'tasks')
     search_fields = ('description',)
-
-    class Media:
-        js = ['mwt/admin/js/test_admin.js', ]
 
 
 class PluginAdmin(admin.ModelAdmin):

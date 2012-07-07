@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import simplejson
 import re
 from .. import helper
 
@@ -39,8 +40,14 @@ class Plugin(models.Model):
         return helper.versionnumber(str(self.versionfield))
 
     @property
-    def params_list(self):
-        return self.params.split(',')
+    def params_dict(self):
+        return simplejson.loads(self.params)
+
+    @property
+    def has_params(self):
+        if simplejson.loads(self.params):
+            return True
+        return False
 
 
 class PluginOption(models.Model):

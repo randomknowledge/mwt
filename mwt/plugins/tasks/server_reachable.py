@@ -10,7 +10,16 @@ __pluginname__ = 'MWT Server Reachabe Plugin'
 __description__ = """MWT Server Reachabe Plugin.
 Simply checks if a remote Server is reachable via HTTP
 """
-__params__ = ['url']
+
+__params__ = {
+    'url': {
+        'description': u'',
+        'mandatory': True,
+        'type': 'string',
+        'must_match': '^https?:\/\/\S+$',
+        'default': '',
+    },
+}
 
 
 class NoRedirectHandler(urllib2.HTTPRedirectHandler):
