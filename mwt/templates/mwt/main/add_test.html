@@ -48,15 +48,8 @@
                     <div class="control-group">
                         <label class="control-label">{% trans "Schedules" %}</label>
                         <div class="controls">
-                            <a class="btn btn-primary"><i class="icon-plus-sign icon-white"></i> {% trans "Add Schedule" %}</a>
-                            <div class="breadcrumb active well form-inline" data-toggle="buttons-checkbox" id="schedules">
-                                <label for="firstrun-at">{% trans "First run at:" %}
-                                    <input type="text" class="input-small" id="firstrun-at" name="firstrun-at">
-                                </label>
-                                <label for="repeat">{% trans "Repeat:" %}
-                                    <input type="text" class="input-small" id="repeat" name="repeat">
-                                </label>
-                            </div>
+                            <a class="btn btn-primary" id="add-schedule-button"><i class="icon-plus-sign icon-white"></i> {% trans "Add Schedule" %}</a>
+                            {% include "mwt/main/snippets/add_schedule.html" %}
                         </div>
                     </div>
 

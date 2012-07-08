@@ -25,6 +25,11 @@ td span.label {
     padding: 0;
 }
 
+.add_test
+{
+    padding-top: 10px!important;
+}
+
 .add_test .plugin-button
 {
     margin-top: 3px;
@@ -89,14 +94,16 @@ td span.label {
     background-color: #468847;
 }
 
-.add_test #schedules
+.add_test .schedule
 {
     margin-top: 10px;
     padding-bottom: 0;
-    display: none;
 }
 
-.add_test #schedules.active
+.add_test .schedule.active
 {
     display: block;
+    background: #D9EDF7;
+    border: 1px solid #BCE8F1;
+    box-shadow: none;
 }

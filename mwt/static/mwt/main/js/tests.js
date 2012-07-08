@@ -8,8 +8,7 @@ $(document).ready(function(){
             $(this).colorbox({
                 iframe:true,
                 width:"95%",
-                height:"95%",
-                scrolling: false
+                height:"95%"
             });
         });
 

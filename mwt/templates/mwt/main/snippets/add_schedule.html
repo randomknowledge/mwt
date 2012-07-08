@@ -1,0 +1,18 @@
+{% load i18n %}
+<div id="schedule-template" style="display: none;">
+<div class="breadcrumb well form-inline schedule" data-toggle="buttons-checkbox" id="schedule-[id]">
+    <label for="">{% trans "First run at:" %}
+        <input type="date" class="input-small date" value="{% now "Y-m-d" %}" id="schedule-[id]-firstrun-at-date" name="schedule-[id]-firstrun-at-date" />
+        <input type="time" class="input-mini time" value="{% now "H:i:s" %}" id="schedule-[id]-firstrun-at-time" name="schedule-[id]-firstrun-at-time" />
+    </label>
+        <button class="btn btn-small btn-success btn-now"><i class="icon-time icon-white"></i> {% trans "now" %}</button>
+    <label for="schedule-[id]-repeat">{% trans "Repeat:" %}
+        <select name="repeat" id="schedule-[id]-repeat" class="input-medium repeat">
+            {% for repeat in repet_intervals %}
+                <option value="{{ repeat.0 }}" {% if repeat.0 == 'no' %}selected="selected"{% endif %}>{{ repeat.1 }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <button class="close close-schedule">×</button>
+</div>
+</div>

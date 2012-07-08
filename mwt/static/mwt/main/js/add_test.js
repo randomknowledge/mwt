@@ -1,6 +1,7 @@
 $(document).ready(function(){
     if( window.view_name == 'add_test' )
     {
+        var schedule_id = 0;
         $('.btn-group .btn').button();
 
         $('.form-actions button.cancel').click(function(event){
@@ -29,6 +30,48 @@ $(document).ready(function(){
             submitForm();
         });
 
+        $('#add-schedule-button').click(function(event){
+            event.preventDefault();
+            schedule_id++;
+            tpl = $('#schedule-template').html().replace(/\[id\]/g, schedule_id);
+            $(this).after($(tpl));
+
+            $('.close-schedule').unbind('click');
+            $('.close-schedule').click(function(event){
+                event.preventDefault();
+                $(this).parent().remove();
+            });
+
+            $('.btn-now').unbind('click');
+            $('.btn-now').click(function(event){
+                event.preventDefault();
+                var me = this;
+                var d = new Date();
+                var curr_date = d.getDate();
+                var curr_month = d.getMonth() + 1; //Months are zero based
+                var curr_year = d.getFullYear();
+                $(this).parent().find('.date').val(zerofill(curr_year,4) + '-' + zerofill(curr_month) + '-' + zerofill(curr_date));
+                $(this).parent().find('.time').val(d.toTimeString().match( /^([0-9]{2}:[0-9]{2}:[0-9]{2})/ )[0]);
+                setTimeout(function(){
+                    $(me).removeClass('active');
+                }, 100);
+            });
+        });
+
+        function zerofill(n, numzeros)
+        {
+            if(numzeros == undefined)
+            {
+                numzeros = 2;
+            }
+            n = n + "";
+            while(n.length < numzeros)
+            {
+                n = "0" + n;
+            }
+            return n;
+        }
+
         function collect_form_data()
         {
             var active_plugins = {};
@@ -52,10 +95,23 @@ $(document).ready(function(){
                 active_notifications[id][key] = get_value_from_field($(this).find('.plugin-option-field'));
             });
 
+            var schedules   = [];
+            $('.schedule').each(function(){
+                if( $(this).parent().attr('id') != 'schedule-template' )
+                {
+                    schedules.push({
+                        'date': $(this).find('.date').val(),
+                        'time': $(this).find('.time').val(),
+                        'repeat': $(this).find('.repeat').val()
+                    });
+                }
+            });
+
             data = {
                 'description': $('#description').val(),
                 'plugins': active_plugins,
-                'notifications': active_notifications
+                'notifications': active_notifications,
+                'schedules': schedules
             };
 
             return data;

@@ -126,6 +126,7 @@ class DashboardView(TemplateView):
             'website': w,
             'plugins': TaskPlugin.objects.all(),
             'notifications': NotificationPlugin.objects.all(),
+            'repet_intervals': constants.RUN_REPEAT_CHOICES,
         }
 
     def paginate(self, items, columns, item_template, extra_context={}):
