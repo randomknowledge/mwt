@@ -88,3 +88,15 @@ td span.label {
 {
     background-color: #468847;
 }
+
+.add_test #schedules
+{
+    margin-top: 10px;
+    padding-bottom: 0;
+    display: none;
+}
+
+.add_test #schedules.active
+{
+    display: block;
+}

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.template.loader import render_to_string
 from django.utils.decorators import classonlymethod
 from django.views.generic.base import TemplateView
@@ -113,11 +114,10 @@ class DashboardView(TemplateView):
         })
 
     def get_add_test_ctx(self, **kwargs):
-        w = None
         try:
             w = Website.objects.for_user(self.request.user).filter(pk=int(kwargs.get('website_id')))[0]
         except Exception:
-            pass
+            raise PermissionDenied()
 
         if 'ajax' in self.request.GET:
             return form_handlers.add_test(website=w, request=self.request)
