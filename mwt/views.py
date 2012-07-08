@@ -6,6 +6,7 @@ from . import constants
 from .models.base import Client, Website, Testrun, Test
 from .models.plugins import TaskPlugin, NotificationPlugin
 import simple_paginator
+from . import form_handlers
 from .utils.http import JsonResponse
 
 
@@ -117,6 +118,10 @@ class DashboardView(TemplateView):
             w = Website.objects.for_user(self.request.user).filter(pk=int(kwargs.get('website_id')))[0]
         except Exception:
             pass
+
+        if 'ajax' in self.request.GET:
+            return form_handlers.add_test(website=w, request=self.request)
+
         return {
             'website': w,
             'plugins': TaskPlugin.objects.all(),
@@ -155,4 +160,4 @@ class DashboardView(TemplateView):
             return super(DashboardView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        return super(DashboardView, self).get(request, *args, **kwargs)
+        return self.get(request, *args, **kwargs)

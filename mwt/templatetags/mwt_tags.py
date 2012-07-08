@@ -1,3 +1,4 @@
+from django.template.loader import render_to_string
 from django.utils.safestring import SafeUnicode
 
 try:
@@ -19,6 +20,16 @@ register = template.Library()
 @register.simple_tag
 def re_replace(string, pattern, replace):
     return re.sub(pattern, replace, string)
+
+
+@register.filter
+def concat(value, c):
+    return "%s%s" % (value, c)
+
+
+@register.simple_tag
+def boolean_button(active=False, button_id=None, classes=None):
+    return render_to_string("mwt/main/snippets/boolean_button.html", {'active': active, 'id': button_id, 'classes': classes})
 
 
 @register.simple_tag

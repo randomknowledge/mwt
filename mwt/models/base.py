@@ -69,6 +69,9 @@ class Website(models.Model):
 
     objects = BelongstoManager()
 
+    def belongs_to(self, user):
+        return self.users.filter(pk=user.pk) or self.groups.filter(users__id=user.pk)
+
     class Meta:
         app_label = 'mwt'
 

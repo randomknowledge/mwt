@@ -1,0 +1,29 @@
+{% load i18n %}
+{% load mwt_tags %}
+<div class="accordion {{ plugintype }}-options-accordion">
+    <div class="accordion-group plugin-options {{ plugintype }}" id="{{ plugintype }}-options-{{ plugin.pk }}">
+        <div class="accordion-heading">
+            <a href="#{{ plugintype }}-options-body-{{ plugin.pk }}" data-parent="#{{ plugintype }}-options-accordion" data-toggle="collapse" class="accordion-toggle">
+                {{ plugin.name }}
+            </a>
+        </div>
+        <div class="accordion-body" id="{{ plugintype }}-options-body-{{ plugin.pk }}">
+            <div class="accordion-inner">
+                {% for param, opts in plugin.params_dict.items %}
+                    <label class="control-label" for="{{ plugintype }}-param-{{ plugin.pk }}-{{ forloop.counter }}">{{ opts.description|default:param }}:</label>
+                    <div class="controls" data-param="{{ param }}" data-plugin-id="{{ plugin.pk }}">
+                        {% if opts.type == 'number' %}
+                            <input value="{{ opts.default }}" type="number" class="input input-medium plugin-option-field" name="{{ plugintype }}-param-{{ plugin.pk }}-{{ forloop.counter }}" id="{{ plugintype }}-param-{{ plugin.pk }}-{{ forloop.counter }}" />
+                        {% elif opts.type == 'boolean' %}
+                            {% boolean_button opts.default plugintype|concat:"-param-"|concat:plugin.pk|concat:"-"|concat:forloop.counter "plugin-option-field" %}
+                        {% elif opts.type == 'text' %}
+                            <textarea class="input input-medium plugin-option-field" name="{{ plugintype }}-param-{{ plugin.pk }}-{{ forloop.counter }}" id="{{ plugintype }}-param-{{ plugin.pk }}-{{ forloop.counter }}">{{ opts.default }}</textarea>
+                        {% else %}
+                            <input value="{{ opts.default }}" type="text" class="input input-medium plugin-option-field" name="{{ plugintype }}-param-{{ plugin.pk }}-{{ forloop.counter }}" id="{{ plugintype }}-param-{{ plugin.pk }}-{{ forloop.counter }}" />
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

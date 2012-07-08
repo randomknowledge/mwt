@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="span9">
-            <form class="well form-horizontal" method="post" action="{% url 'mwt_add_test' website.pk %}">
+            <form class="well form-horizontal" method="get" action="{% url 'mwt_add_test' website.pk %}" id="main_form">
                 {% csrf_token %}
                 <input type="hidden" name="website" value="{{ website.pk }}">
                 <fieldset>
@@ -53,70 +53,17 @@
             </form>
         </div>
         <div class="span3 options">
-            <form class="well form-vertical">
+            <form class="well form-vertical" id="options_form">
                 <legend>{% trans "Options" %}</legend>
                 {% for plugin in plugins %}
                     {% if plugin.has_params %}
-                        <div class="accordion plugin-options-accordion">
-                            <div class="accordion-group plugin-options plugin" id="plugin-options-{{ plugin.pk }}">
-                                <div class="accordion-heading">
-                                    <a href="#plugin-options-body-{{ plugin.pk }}" data-parent="#plugin-options-accordion" data-toggle="collapse" class="accordion-toggle">
-                                        {{ plugin.name }}
-                                    </a>
-                                </div>
-                                <div class="accordion-body" id="plugin-options-body-{{ plugin.pk }}">
-                                    <div class="accordion-inner">
-                                        {% for param, opts in plugin.params_dict.items %}
-                                            <label class="control-label" for="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}">{{ opts.description|default:param }}:</label>
-                                            <div class="controls">
-                                                {% if opts.type == 'number' %}
-                                                    <input value="{{ opts.default }}" type="number" class="input input-medium" name="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" id="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" />
-                                                {% elif opts.type == 'boolean' %}
-                                                    <button class="btn btn-boolean btn-danger{% if opts.default %} active{% endif %}" data-toggle="button" id="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}"><span class="on">{% trans "Yes" %}</span><span class="off">{% trans "No" %}</span></button>
-                                                {% elif opts.type == 'text' %}
-                                                    <textarea class="input input-medium" name="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" id="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}">{{ opts.default }}</textarea>
-                                                {% else %}
-                                                    <input value="{{ opts.default }}" type="text" class="input input-medium" name="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" id="plugin-param-{{ plugin.pk }}-{{ forloop.counter }}" />
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {% include "mwt/main/snippets/plugin_option.html" with plugintype="plugin" %}
                     {% endif %}
                 {% endfor %}
 
-
-                {% for notification in notifications %}
-                    {% if notification.has_params %}
-                        <div class="accordion notification-options-accordion">
-                            <div class="accordion-group plugin-options notification" id="notification-options-{{ notification.pk }}">
-                                <div class="accordion-heading">
-                                    <a href="#notification-options-body-{{ notification.pk }}" data-parent="#notification-options-accordion" data-toggle="collapse" class="accordion-toggle">
-                                        {{ notification.name }}
-                                    </a>
-                                </div>
-                                <div class="accordion-body" id="notification-options-body-{{ notification.pk }}">
-                                    <div class="accordion-inner">
-                                        {% for param, opts in notification.params_dict.items %}
-                                            <label class="control-label" for="notification-param-{{ notification.pk }}-{{ forloop.counter }}">{{ opts.description|default:param }}:</label>
-                                            <div class="controls">
-                                                {% if opts.type == 'number' %}
-                                                    <input value="{{ opts.default }}" type="number" class="input input-medium" name="notification-param-{{ notification.pk }}-{{ forloop.counter }}" id="notification-param-{{ notification.pk }}-{{ forloop.counter }}" />
-                                                {% elif opts.type == 'boolean' %}
-                                                    <button class="btn btn-boolean btn-danger{% if opts.default %} active{% endif %}" data-toggle="button" id="notification-param-{{ notification.pk }}-{{ forloop.counter }}"><span class="on">{% trans "Yes" %}</span><span class="off">{% trans "No" %}</span></button>
-                                                {% elif opts.type == 'text' %}
-                                                    <textarea class="input input-medium" name="notification-param-{{ notification.pk }}-{{ forloop.counter }}" id="notification-param-{{ notification.pk }}-{{ forloop.counter }}">{{ opts.default }}</textarea>
-                                                {% else %}
-                                                    <input value="{{ opts.default }}" type="text" class="input input-medium" name="notification-param-{{ notification.pk }}-{{ forloop.counter }}" id="notification-param-{{ notification.pk }}-{{ forloop.counter }}" />
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                {% for plugin in notifications %}
+                    {% if plugin.has_params %}
+                        {% include "mwt/main/snippets/plugin_option.html" with plugintype="notification" %}
                     {% endif %}
                 {% endfor %}
             </form>
