@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load url from future %}
 {% load mwt_tags %}
+{% load compress %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,12 +12,14 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    {% compress css %}
     {% block css %}
         <link href="{% static "mwt/main/css/bootstrap.css" %}" rel="stylesheet">
         <link href="{% static "mwt/main/css/jquery.colorbox.css" %}" rel="stylesheet">
         <link href="{% static "mwt/main/css/main.css" %}" rel="stylesheet">
         <link href="{% static "mwt/main/css/bootstrap-responsive.css" %}" rel="stylesheet">
     {% endblock %}
+    {% endcompress %}
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -84,6 +87,7 @@
     n/t
 {% endblock %}
 </div>
+{% compress js %}
 {% block js %}
     <script src="{% static "mwt/main/js/lib/jquery.js" %}"></script>
     <script src="{% static "mwt/main/js/lib/jquery.colorbox.js" %}"></script>
@@ -99,11 +103,13 @@
     <script src="{% static "mwt/main/js/lib/bootstrap-collapse.js" %}"></script>
     <script src="{% static "mwt/main/js/lib/bootstrap-carousel.js" %}"></script>
     <script src="{% static "mwt/main/js/lib/bootstrap-typeahead.js" %}"></script>
-    <script src="{% static "mwt/main/js/testruns.js" %}"></script>
-    <script src="{% static "mwt/main/js/tests.js" %}"></script>
-    <script src="{% static "mwt/main/js/add_test.js" %}"></script>
-    <script src="{% static "mwt/main/js/main.js" %}"></script>
+    <script type="text/coffeescript" charset="utf-8" src="{% static "mwt/main/coffee/utils.coffee" %}"></script>
+    <script type="text/coffeescript" charset="utf-8" src="{% static "mwt/main/coffee/tests.coffee" %}"></script>
+    <script type="text/coffeescript" charset="utf-8" src="{% static "mwt/main/coffee/testruns.coffee" %}"></script>
+    <script type="text/coffeescript" charset="utf-8" src="{% static "mwt/main/coffee/add_test.coffee" %}"></script>
+    <script type="text/coffeescript" charset="utf-8" src="{% static "mwt/main/coffee/main.coffee" %}"></script>
 {% endblock %}
+{% endcompress %}
 {% endblock %}
 </body>
 </html>
