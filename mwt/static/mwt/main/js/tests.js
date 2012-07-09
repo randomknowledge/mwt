@@ -7,6 +7,8 @@ $(document).ready(function(){
             event.preventDefault();
             $(this).colorbox({
                 iframe:true,
+				rel: 'nofollow',
+				speed: 0,
                 width:"95%",
                 height:"95%"
             });
@@ -14,8 +16,8 @@ $(document).ready(function(){
 
         $(window).resize(function(event){
             $.colorbox.resize({
-                width: $(window).width() - 20,
-                height: $(window).height() - 20
+                width: Math.round(95 * $(window).width() / 100),
+                height: Math.round(95 * $(window).height() / 100)
             });
         });
     }

@@ -129,6 +129,19 @@ class DashboardView(TemplateView):
             'repet_intervals': constants.RUN_REPEAT_CHOICES,
         }
 
+    def get_edit_test_ctx(self, **kwargs):
+        try:
+            t = Test.objects.for_user(self.request.user).filter(pk=int(kwargs.get('test_id')))[0]
+        except Exception:
+            raise PermissionDenied()
+
+        return {
+            'test': t,
+            'plugins': TaskPlugin.objects.all(),
+            'notifications': NotificationPlugin.objects.all(),
+            'repet_intervals': constants.RUN_REPEAT_CHOICES,
+        }
+
     def paginate(self, items, columns, item_template, extra_context={}):
         i, o, b = simple_paginator.paginate(self.request, self.view_name, items, columns=columns, per_page=14)
 

@@ -48,7 +48,7 @@
                                                                             <b class="caret"></b>
                                                                         </a>
                                                                         <ul class="dropdown-menu">
-                                                                            <li><a href="{% url 'admin:mwt_test_change' test.pk %}">{% trans "Edit" %}</a></li>
+                                                                            <li><a href="{% url 'mwt_edit_test' test.pk %}" rel="lightbox">{% trans "Edit" %}</a></li>
                                                                             <li class="divider"></li>
                                                                             <li><a href="{% url 'admin:mwt_test_delete' test.pk %}">{% trans "Delete" %}</a></li>
                                                                         </ul>

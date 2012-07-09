@@ -26,4 +26,10 @@ urlpatterns = patterns('',
         staff_member_required(DashboardView.view('add_test')),
         name='mwt_add_test'
     ),
+
+    url(
+        r'^tests/edit/(?P<test_id>\d+)/?$',
+        staff_member_required(DashboardView.view('edit_test')),
+        name='mwt_edit_test'
+    ),
 )
