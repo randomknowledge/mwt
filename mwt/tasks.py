@@ -10,6 +10,10 @@ import os
 import re
 
 
+registered_tasks = {}
+registered_notifications = {}
+
+
 def import_plugins(type):
     s_plugins = 'plugins'
     s_tasks = type
@@ -25,6 +29,10 @@ def import_plugins(type):
                 mod = m.group('module')
                 try:
                     dsn = "%s.%s" % (parentmodule, mod)
+                    try:
+                        del sys.modules[dsn]
+                    except Exception:
+                        pass
                     i = __import__(dsn, globals(), locals(), [parentmodule], -1)
                 except Exception:
                     logger.error("Failed to import Plugin %s: %s" %
@@ -48,25 +56,26 @@ def import_plugins(type):
     return imported
 
 
-def register_plugins(type):
+def register_plugins(type, update_db=False, force=False):
     registered_plugins = {}
     for plugin in import_plugins(type):
         logger.log('debug', "Registering Plugin '%s'" % plugin.__name__)
-        if type == 'tasks':
-            p, created = TaskPlugin.objects.get_or_create(dsn=plugin.__name__)
-        else:
-            p, created = NotificationPlugin.objects.get_or_create(dsn=plugin.__name__)
+        if update_db:
+            if type == 'tasks':
+                p, created = TaskPlugin.objects.get_or_create(dsn=plugin.__name__)
+            else:
+                p, created = NotificationPlugin.objects.get_or_create(dsn=plugin.__name__)
 
-        if created or p.versionnumber < helper.versionnumber(plugin.__version__):
-            p.name = str(plugin.__pluginname__)
-            p.author = str(plugin.__author__)
-            p.description = str(plugin.__description__)
-            p.versionfield = str(plugin.__version__)
-            p.params = simplejson.dumps(plugin.__params__)
-            p.save()
-        else:
-            logger.log('debug', "Plugin '%s' with higher or same Version "
-                                "already exists. Not creating Plugin object "
-                                "in DB." % p.__unicode__())
+            if created or p.versionnumber < helper.versionnumber(plugin.__version__) or force:
+                p.name = str(plugin.__pluginname__)
+                p.author = str(plugin.__author__)
+                p.description = str(plugin.__description__)
+                p.versionfield = str(plugin.__version__)
+                p.params = simplejson.dumps(plugin.__params__)
+                p.save()
+            else:
+                logger.log('debug', "Plugin '%s' with higher or same Version "
+                                    "already exists. Not creating Plugin object "
+                                    "in DB." % p.__unicode__())
         registered_plugins[plugin.__name__] = plugin.Main()
     return registered_plugins

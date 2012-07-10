@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from time import sleep
 from django.core.management.base import BaseCommand
-from ... import registered_tasks, registered_notifications
+from ...tasks import registered_tasks, registered_notifications
 from ...models.base import Testrun, RunSchedule
 from ... import constants
 from ...utils.exceptions import get_stacktrace_string
