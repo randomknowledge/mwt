@@ -25,43 +25,51 @@ td span.label {
     padding: 0;
 }
 
-.add_test
+.add_test,
+.edit_test
 {
     padding-top: 10px!important;
 }
 
-.add_test .plugin-button
+.add_test .plugin-button,
+.edit_test .plugin-button
 {
     margin-top: 3px;
     margin-bottom: 3px;
 }
 
-.add_test .plugin-button i
+.add_test .plugin-button i,
+.edit_test .plugin-button i
 {
     background-position: -120px -144px;
 }
 
-.add_test .plugin-button.active i
+.add_test .plugin-button.active i,
+.edit_test .plugin-button.active i
 {
     background-position: -96px -144px;
 }
 
-.add_test .options table
+.add_test .options table,
+.edit_test .options table
 {
     margin-bottom: 8px;
 }
 
-.add_test .options table thead tr td
+.add_test .options table thead tr td,
+.edit_test .options table thead tr td
 {
     font-weight: bold;
 }
 
-.add_test .options .plugin-options
+.add_test .options .plugin-options,
+.edit_test .options .plugin-options
 {
     display: none;
 }
 
-.add_test .options .plugin-options.active
+.add_test .options .plugin-options.active,
+.edit_test .options .plugin-options.active
 {
     display: block;
 }
@@ -94,13 +102,15 @@ td span.label {
     background-color: #468847;
 }
 
-.add_test .schedule
+.add_test .schedule,
+.edit_test .schedule
 {
     margin-top: 10px;
     padding-bottom: 0;
 }
 
-.add_test .schedule.active
+.add_test .schedule.active,
+.edit_test .schedule.active
 {
     display: block;
     background: #D9EDF7;
