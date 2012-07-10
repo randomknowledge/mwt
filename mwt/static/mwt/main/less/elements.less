@@ -1,0 +1,36 @@
+@import "defines.less";
+
+.btn-boolean {
+	.on, &.active .off {
+		display: none;
+	}
+
+	.off, &.active .on {
+		display: inline;
+	}
+
+	&.active {
+		background-color: @green;
+	}
+}
+
+.popover {
+	.popover-content {
+		p {
+			margin: 0;
+			padding: 0;
+		}
+	}
+	p {
+		span {
+			line-height: 24px;
+		}
+	}
+	.popover-title {
+		font-size: small;
+	}
+	.popover-inner {
+		width: auto;
+		max-width: 280px;
+	}
+}

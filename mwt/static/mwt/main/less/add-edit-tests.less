@@ -1,0 +1,50 @@
+@import "defines.less";
+
+.add_test, .edit_test {
+	padding-top: 10px!important;
+
+	.plugin-button {
+		margin-top: 3px;
+		margin-bottom: 3px;
+
+		i {
+			background-position: -120px -144px;
+		}
+
+		&.active {
+			i {
+				background-position: -96px -144px;
+			}
+		}
+	}
+
+	.options {
+		.plugin-options {
+			display: none;
+
+			&.active {
+				display: block;
+			}
+		}
+	}
+
+	.schedule {
+		margin-top: 10px;
+		padding-bottom: 0;
+
+		&.active {
+			display: block;
+			background: @lightblue;
+			border: 1px solid darken(@lightblue, 10%);
+			box-shadow: none;
+		}
+	}
+
+	.plugin-options-accordion {
+		background-color: @sand;
+	}
+
+	.notification-options-accordion {
+		background-color: @lightblue;
+	}
+}
