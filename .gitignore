@@ -11,7 +11,6 @@
 ###############
 .idea/
 virtualenv/
-mwtserver/
 phantomjs/
 mwt/static/CACHE/
 
@@ -19,6 +18,7 @@ mwt/static/CACHE/
 #########
 database.db
 mwt/fixtures/initial_data.json
+mwtserver/settings_local.py
 
 # OS generated files #
 ######################
