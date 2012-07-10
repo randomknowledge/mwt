@@ -13,6 +13,7 @@
 virtualenv/
 phantomjs/
 mwt/static/CACHE/
+mwtserver/deployment/
 
 # Files #
 #########
