@@ -104,6 +104,6 @@ class Main(BaseNotificationPlugin):
         text_content = plaintext.render(context)
         html_content = html.render(context)
 
-        msg = EmailMultiAlternatives(subject, text_content, 'MWT Server <noreply@localhost>', to)
+        msg = EmailMultiAlternatives(subject, text_content, constants.MWT_SETTINGS.get('email_from'), to)
         msg.attach_alternative(html_content, "text/html")
         msg.send()
