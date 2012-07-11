@@ -138,6 +138,7 @@ class DashboardView(TemplateView):
 
         return {
             'test': t,
+            'test_json': t.to_json(),
             'plugins': TaskPlugin.objects.all(),
             'notifications': NotificationPlugin.objects.all(),
             'repet_intervals': constants.RUN_REPEAT_CHOICES,

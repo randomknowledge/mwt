@@ -5,3 +5,5 @@ $ ->
     new Tests()
   else if window.view_name == 'add_test'
     new Addtest()
+  else if window.view_name == 'edit_test'
+    new Edittest()

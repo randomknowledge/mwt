@@ -2,6 +2,7 @@ import cgi
 import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core import serializers
 from django.db import models
 from .. import constants
 from django.db.models.signals import post_save
@@ -90,17 +91,41 @@ class Test(models.Model):
     class Meta:
         app_label = 'mwt'
 
-    def to_json(self):
+    def to_simple_object(self):
+        me = simplejson.loads(serializers.serialize("json", Test.objects.select_related(depth=99).filter(pk=self.pk)))[0]
+        fields = me.get('fields')
 
-        tasks = self.tasks.all()
-        for task in tasks:
-            opts = TaskPluginOption.objects.filter(plugin=task).values('id', 'key', 'value', 'plugin_id')
+        def get_plugin_options(tasks, task_id):
+            for t in tasks:
+                if t.get('id') == task_id:
+                    return t
+            return None
+
+        tasks = []
+        for plugin in TaskPluginOption.objects.filter(test=self, plugin__pk__in=fields.get('tasks')).values('plugin', 'pk', 'key', 'value'):
+            pid = plugin.get('plugin')
+            if not pid in [t.get('id') for t in tasks]:
+                tasks.append({'id': pid, 'options': []})
+            get_plugin_options(tasks, pid).get('options').append({'id': plugin.get('pk'), 'key': plugin.get('key'), 'value': plugin.get('value')})
+
+
+        notifications = []
+        for plugin in NotificationPluginOption.objects.filter(test=self, plugin__pk__in=fields.get('notifications')).values('plugin', 'pk', 'key', 'value'):
+            pid = plugin.get('plugin')
+            if not pid in [t.get('id') for t in notifications]:
+                notifications.append({'id': pid, 'options': []})
+            get_plugin_options(notifications, pid).get('options').append({'id': plugin.get('pk'), 'key': plugin.get('key'), 'value': plugin.get('value')})
 
         return {
-            'description': self.description,
-            'tasks': self.tasks.all().values('id'),
-            'notifications': map(lambda x: x.get('pk'), self.notifications.all().values('pk')),
+            'id': me.get('pk'),
+            'description': me.get('description'),
+            'website': fields.get('website'),
+            'notifications': notifications,
+            'tasks': tasks,
         }
+
+    def to_json(self):
+        return simplejson.dumps(self.to_simple_object(), ensure_ascii=False)
 
     def get_options_for_task_dsn(self, task_dsn):
         return self._plugin_opts_to_dict(
