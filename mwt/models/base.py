@@ -90,6 +90,18 @@ class Test(models.Model):
     class Meta:
         app_label = 'mwt'
 
+    def to_json(self):
+
+        tasks = self.tasks.all()
+        for task in tasks:
+            opts = TaskPluginOption.objects.filter(plugin=task).values('id', 'key', 'value', 'plugin_id')
+
+        return {
+            'description': self.description,
+            'tasks': self.tasks.all().values('id'),
+            'notifications': map(lambda x: x.get('pk'), self.notifications.all().values('pk')),
+        }
+
     def get_options_for_task_dsn(self, task_dsn):
         return self._plugin_opts_to_dict(
             TaskPluginOption.objects.filter(plugin=self.tasks.get(dsn=task_dsn))

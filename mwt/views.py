@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.template.loader import render_to_string
+from django.utils import simplejson
 from django.utils.decorators import classonlymethod
 from django.views.generic.base import TemplateView
 from . import constants
