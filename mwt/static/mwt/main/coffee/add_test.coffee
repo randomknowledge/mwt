@@ -58,8 +58,9 @@ class @Addtest
       ), 100
 
 
-  submitForm: ->
+  submitForm: =>
     url = Utils.getAjaxUrl()
+    console.log @collect_form_data()
     $.ajax
       url: url + "&data=" + JSON.stringify(@collect_form_data())
       type: "GET"
@@ -73,28 +74,35 @@ class @Addtest
 
 
   collect_form_data: ->
-    active_plugins = {}
-    active_notifications = {}
-    $("#plugins .plugin-button.active").each ->
-      active_plugins[parseInt($(this).attr("data-id"))] = {}
+    active_plugins = []
+    active_notifications = []
+    $("#plugins .plugin-button.active").each (idx, ele) =>
+      pid = parseInt $(ele).attr("data-id")
+      plugin = {'id': pid, 'options': []}
+      $(".plugin-options-accordion .accordion-group.active div.controls[data-plugin-id=#{pid}]").each (idx, ele) =>
+        option_id = $(ele).attr('data-option-id')
+        key = $(ele).attr("data-param")
+        value = @get_value_from_field($(ele).find(".plugin-option-field"))
+        plugin.options.push { 'id': option_id, 'key': key, 'value': value }
+      active_plugins.push plugin
 
-    $("#notifications .plugin-button.active").each ->
-      active_notifications[parseInt($(this).attr("data-id"))] = {}
-
-    $(".plugin-options-accordion .accordion-group.active div.controls").each ->
-      key = $(this).attr("data-param")
-      id = parseInt($(this).attr("data-plugin-id"))
-      active_plugins[id][key] = @get_value_from_field($(this).find(".plugin-option-field"))
-
-    $(".notification-options-accordion .accordion-group.active div.controls").each ->
-      key = $(this).attr("data-param")
-      id = parseInt($(this).attr("data-plugin-id"))
-      active_notifications[id][key] = @get_value_from_field($(this).find(".plugin-option-field"))
+    $("#notifications .plugin-button.active").each (idx, ele) =>
+      #active_notifications[parseInt($(this).attr("data-id"))] = {}
+      pid = parseInt $(ele).attr("data-id")
+      plugin = {'id': pid, 'options': []}
+      $(".notification-options-accordion .accordion-group.active div.controls[data-plugin-id=#{pid}]").each (idx, ele) =>
+        option_id = $(ele).attr('data-option-id')
+        key = $(ele).attr("data-param")
+        value = @get_value_from_field($(ele).find(".plugin-option-field"))
+        plugin.options.push { 'id': option_id, 'key': key, 'value': value }
+      active_notifications.push plugin
 
     schedules = []
     $(".schedule").each ->
       unless $(this).parent().attr("id") is "schedule-template"
         schedules.push
+          id: $(this).attr 'data-schedule-id'
+          paused: $(this).find('.button-play-pause').hasClass('active')
           date: $(this).find(".date").val()
           time: $(this).find(".time").val()
           repeat: $(this).find(".repeat").val()

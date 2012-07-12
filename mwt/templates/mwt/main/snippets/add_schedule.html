@@ -1,6 +1,6 @@
 {% load i18n %}
 <div id="schedule-template" style="display: none;">
-<div class="breadcrumb well form-inline schedule" data-toggle="buttons-checkbox" id="schedule-[id]">
+<div class="breadcrumb well form-inline schedule" data-toggle="buttons-checkbox" id="schedule-[id]" data-schedule-id="[id]">
     <label for="">{% trans "First run at:" %}
         <input type="date" class="input-small date" value="{% now "Y-m-d" %}" id="schedule-[id]-firstrun-at-date" name="schedule-[id]-firstrun-at-date" />
         <input type="time" class="input-mini time" value="{% now "H:i:s" %}" id="schedule-[id]-firstrun-at-time" name="schedule-[id]-firstrun-at-time" />
