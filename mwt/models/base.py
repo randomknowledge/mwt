@@ -93,6 +93,7 @@ class Test(models.Model):
 
     def to_simple_object(self):
         me = simplejson.loads(serializers.serialize("json", Test.objects.select_related(depth=99).filter(pk=self.pk)))[0]
+
         fields = me.get('fields')
 
         def get_plugin_options(tasks, task_id):
@@ -121,6 +122,7 @@ class Test(models.Model):
             'description': me.get('description'),
             'website': fields.get('website'),
             'notifications': notifications,
+            'schedules': [{'id': s.pk, 'repeat': s.repeat, 'paused': s.paused} for s in RunSchedule.objects.filter(test=self)],
             'tasks': tasks,
         }
 

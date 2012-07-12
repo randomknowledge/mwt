@@ -18,3 +18,6 @@ class @Edittest extends Addtest
             obj.toggleClass 'active', true
         else
           obj.val(option.value)
+
+    for schedule in window.test_data.schedules
+      @addSchedule schedule.id, schedule.paused, schedule.repeat
