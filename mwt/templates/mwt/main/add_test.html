@@ -16,7 +16,7 @@
                     <div class="control-group">
                         <label class="control-label" for="description">{% trans "Description" %}</label>
                         <div class="controls">
-                            <input type="text" class="input-xxlarge" id="description" name="description">
+                            <input type="text" class="input-xxlarge" id="description" name="description" value="{{ test.description }}">
                             <!--<p class="help-block">Supporting help text</p>-->
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                     </div>
 
                     <div class="form-actions">
-                        <button class="btn btn-primary submit" type="submit"><i class="icon-ok-sign icon-white"></i> {% trans "Add Test" %}</button>
+                        <button class="btn btn-primary submit" type="submit"><i class="icon-ok-sign icon-white"></i> {% block submit_button_label %}{% trans "Add Test" %}{% endblock %}</button>
                         <button class="btn cancel">{% trans "Cancel" %}</button>
                     </div>
                 </fieldset>

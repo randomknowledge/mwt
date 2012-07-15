@@ -2,8 +2,7 @@
 {% load i18n %}
 {% block pre_js_inner %}
 {{ block.super }}
-
 test_data = {{ test_json|safe }};
-
 {% endblock %}
 {% block title %}{% trans "Edit Test " %}<a>{{ test }}</a>{% endblock %}
+{% block submit_button_label %}{% trans "Save" %}{% endblock %}
