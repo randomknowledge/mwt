@@ -18,9 +18,9 @@ class @Addtest
     $(".btn-boolean").click (event) ->
       event.preventDefault()
 
-    $("#main_form").submit (event) ->
+    $("#main_form").submit (event) =>
       event.preventDefault()
-      submitForm()
+      @submitForm()
 
     $("#add-schedule-button").click (event) ->
       event.preventDefault()
@@ -47,10 +47,10 @@ class @Addtest
         ), 100
 
 
-  submitForm = ->
+  submitForm: =>
     url = Utils.getAjaxUrl()
     $.ajax
-      url: url + "&data=" + JSON.stringify(collect_form_data())
+      url: url + "&data=" + JSON.stringify(@collect_form_data())
       type: "GET"
       dataType: "json"
       processdata: false
@@ -61,24 +61,31 @@ class @Addtest
         console.log jqXHR, textStatus, errorThrown
 
 
-  collect_form_data = ->
+  collect_form_data: =>
     active_plugins = {}
     active_notifications = {}
+
     $("#plugins .plugin-button.active").each ->
       active_plugins[parseInt($(this).attr("data-id"))] = {}
 
     $("#notifications .plugin-button.active").each ->
       active_notifications[parseInt($(this).attr("data-id"))] = {}
 
-    $(".plugin-options-accordion .accordion-group.active div.controls").each ->
-      key = $(this).attr("data-param")
-      id = parseInt($(this).attr("data-plugin-id"))
-      active_plugins[id][key] = get_value_from_field($(this).find(".plugin-option-field"))
+    $(".plugin-options-accordion .accordion-group.active div.controls").each (idx, ele) =>
+      key = $(ele).attr("data-param")
+      id = parseInt($(ele).attr("data-plugin-id"))
+      field = $(ele).find(".plugin-option-field")
+      active_plugins[id][key] = @get_value_from_field(field)
+      true
 
-    $(".notification-options-accordion .accordion-group.active div.controls").each ->
-      key = $(this).attr("data-param")
-      id = parseInt($(this).attr("data-plugin-id"))
-      active_notifications[id][key] = get_value_from_field($(this).find(".plugin-option-field"))
+    $(".notification-options-accordion .accordion-group.active div.controls").each (idx, ele) =>
+      key = $(ele).attr("data-param")
+      id = parseInt($(ele).attr("data-plugin-id"))
+      field = $(ele).find(".plugin-option-field")
+      active_notifications[id][key] = @get_value_from_field(field)
+      true
+
+    console.log active_notifications
 
     schedules = []
     $(".schedule").each ->
@@ -97,7 +104,7 @@ class @Addtest
     data
 
 
-  get_value_from_field = (field) ->
+  get_value_from_field: (field) =>
     switch field[0].nodeName.toLowerCase()
       when "button"
         return $(field).hasClass("active")
