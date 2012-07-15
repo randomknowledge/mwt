@@ -5,6 +5,7 @@ class @Addtest
     $(".btn-group .btn").button()
     $(".form-actions button.cancel").click (event) ->
       event.preventDefault()
+      window.parent.location.reload()
       $(window.parent.document).find("#cboxClose").click()
 
     $(".plugin-button").click (event) ->
@@ -60,14 +61,14 @@ class @Addtest
 
   submitForm: =>
     url = Utils.getAjaxUrl()
-    console.log @collect_form_data()
     $.ajax
       url: url + "&data=" + JSON.stringify(@collect_form_data())
       type: "GET"
       dataType: "json"
       processdata: false
       success: (data, textStatus, jqXHR) ->
-        console.log data
+        if data.success
+          $(".form-actions button.cancel").click()
 
       error: (jqXHR, textStatus, errorThrown) ->
         console.log jqXHR, textStatus, errorThrown
@@ -85,9 +86,9 @@ class @Addtest
         value = @get_value_from_field($(ele).find(".plugin-option-field"))
         plugin.options.push { 'id': option_id, 'key': key, 'value': value }
       active_plugins.push plugin
+      true
 
     $("#notifications .plugin-button.active").each (idx, ele) =>
-      #active_notifications[parseInt($(this).attr("data-id"))] = {}
       pid = parseInt $(ele).attr("data-id")
       plugin = {'id': pid, 'options': []}
       $(".notification-options-accordion .accordion-group.active div.controls[data-plugin-id=#{pid}]").each (idx, ele) =>
@@ -96,6 +97,7 @@ class @Addtest
         value = @get_value_from_field($(ele).find(".plugin-option-field"))
         plugin.options.push { 'id': option_id, 'key': key, 'value': value }
       active_notifications.push plugin
+      true
 
     schedules = []
     $(".schedule").each ->

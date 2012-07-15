@@ -1,3 +1,4 @@
+import re
 from . import BaseNotificationPlugin
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.context import Context
@@ -45,7 +46,7 @@ class Main(BaseNotificationPlugin):
         if not to:
             raise Exception("%s didn't receive a 'to' address!" % __pluginname__)
 
-        to = to.split(',')
+        to = [t.strip() for t in re.split(r'[\r\n,]+', to.strip())]
 
         runs = []
         successful = 0
